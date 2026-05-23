@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday! 🎂</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Outfit:wght@300;400;600;800&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var isFromThailand = urlParams.get('from') === 'thailand';
+            if (isFromThailand) {
+                document.documentElement.classList.add('preload-todo');
+                if ('scrollRestoration' in history) {
+                    history.scrollRestoration = 'manual';
+                }
+            }
+        })();
+    </script>
+</head>
+<body>
+
+    <!-- Confetti Canvas (for celebration strings/craft) -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Horror Fog Canvas (behind everything in horror stage) -->
+    <canvas id="horror-canvas"></canvas>
+
+    <!-- STAGE 1: Horror Stage -->
+    <section id="horror-stage" class="stage active-stage">
+        <!-- Multiple layered overlays for depth -->
+        <div class="vignette-overlay"></div>
+        
+        <!-- PHASE A: Blow the Candle -->
+        <div id="candle-content-wrapper">
+            <div id="candle-scene">
+                <!-- Person emoji facing right -->
+                <span class="emoji-char person-emoji">👧</span>
+                
+                <!-- Cake with glowing candle -->
+                <div class="cake-container">
+                    <span class="emoji-char cake-emoji">🎂</span>
+                    <div class="candle-flame" id="candle-flame"></div>
+                </div>
+            </div>
+            
+            <div id="candle-prompt" class="sweet-prompt">
+                <span>Tap me to blow the candle 🕯️</span>
+            </div>
+        </div>
+
+        <!-- PHASE B: Birthday Wish (User Photo) -->
+        <div id="wish-content-wrapper" class="js-hidden">
+            <h1 id="wish-title" class="wish-text">Happy Birthday My Zombie 🎂</h1>
+            <div id="zombie-frame">
+                <img id="zombie-img" src="assets/IMG_20260521_150158.jpg" alt="Birthday Girl">
+                <div class="scan-line"></div>
+                <div class="static-noise"></div>
+            </div>
+            <div id="click-prompt" class="sweet-prompt-pulse">
+                <span>Tap to continue... ✨</span>
+            </div>
+        </div>
+
+        <!-- Random flicker overlay -->
+        <div id="flicker-overlay"></div>
+    </section>
+
+    <!-- JUMPSCARE OVERLAY (fixed fullscreen) -->
+    <div id="jumpscare-overlay" class="js-hidden">
+        <img id="jumpscare-img" src="assets/scary_overlay.png" alt="">
+        <div class="blood-vignette"></div>
+        <div class="static-fullscreen"></div>
+    </div>
+
+    <!-- White flash for transition -->
+    <div id="white-flash" class="js-hidden"></div>
+
+    <!-- STAGE 2: Cute Birthday Stage -->
+    <section id="cute-stage" class="stage hidden-stage">
+        <canvas id="hearts-canvas"></canvas>
+
+        <div id="cute-content-wrapper">
+            <header id="cute-header">
+                <h1 id="cute-title" class="birthday-title">Happy Birthday, Beautiful! ✨</h1>
+                <p id="cute-subtitle">Every moment with you is special. Here's a little memory lane...</p>
+            </header>
+
+            <div id="photo-gallery">
+                <div class="polaroid-card card-left">
+                    <div class="polaroid-img-wrapper">
+                        <img class="polaroid-img" src="assets/cute_girl_1.png" alt="Cute Moment 1">
+                    </div>
+                    <div class="polaroid-caption">Your Radiance 🌟</div>
+                </div>
+                <div class="polaroid-card card-right">
+                    <div class="polaroid-img-wrapper">
+                        <img class="polaroid-img" src="assets/cute_girl_2.png" alt="Cute Moment 2">
+                    </div>
+                    <div class="polaroid-caption">Sweetest Smile 🍰</div>
+                </div>
+            </div>
+
+            <div id="scroll-indicator">
+                <span>Scroll down for something special...</span>
+                <div class="arrow-bounce">↓</div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════
+                 CLUB 18 SECTION
+                 ═══════════════════════════════════════════════════ -->
+            <div id="club18-section">
+                <h2 class="club18-headline">Welcome to club 18, my cute little zombie! 🧟‍♀️✨</h2>
+                <div class="club18-stage">
+                    <!-- Teen Girl (always visible at start) -->
+                    <div id="club18-teen" class="club18-char club18-center">
+                        <img src="assets/club18_teen.png" alt="17 year old">
+                        <div id="club18-teen-msg" class="club18-msg-popup">This was you: nice, sweet and mean girl</div>
+                        <div class="click-me-tag">Tap me! 👆</div>
+                    </div>
+                    
+                    <!-- Adult Girl (hidden initially) -->
+                    <div id="club18-adult" class="club18-char club18-hidden">
+                        <img src="assets/club18_adult.png" alt="18 year old">
+                        <div id="club18-adult-msg" class="club18-msg-popup">This is you now: adult 18 year old, but you don't belong here...</div>
+                        <div id="club18-adult-tag" class="click-me-tag" style="display:none;">Click her! 👆</div>
+                    </div>
+
+                    <!-- Jail Girl (hidden initially) -->
+                    <div id="club18-jail" class="club18-char club18-hidden">
+                        <img src="assets/club18_jail.png" alt="Jail Girl">
+                        <div id="club18-jail-msg" class="club18-msg-popup">This is your right place 😝</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll indicator to money section -->
+            <div id="scroll-indicator-money" class="scroll-ind-hidden">
+                <span>Keep scrolling...</span>
+                <div class="arrow-bounce">↓</div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════
+                 CHOCOLATE / MONEY SENDING SECTION
+                 ═══════════════════════════════════════════════════ -->
+            <div id="money-section">
+                <h2 class="money-headline">Even if you don't buy me chocolate... 🍫</h2>
+
+                <div id="money-stage">
+                    <!-- Boy character (starts centered) -->
+                    <div id="boy-char" class="char-wrapper boy-centered">
+                        <img src="assets/boy_char.png" alt="Boy" class="char-img">
+                        <div class="click-me-tag">Tap me! 👆</div>
+                    </div>
+
+                    <!-- Girl character (hidden initially, appears on right) -->
+                    <div id="girl-char" class="char-wrapper girl-hidden">
+                        <img src="assets/girl_char.png" alt="Girl" class="char-img">
+                    </div>
+
+                    <!-- Money notes will be spawned here by JS -->
+                    <div id="money-container"></div>
+                </div>
+
+                <div id="money-message" class="money-msg-hidden">
+                    <p>Even you're not buying me chocolates, here's some money to buy that special thai food as promised 😜💕</p>
+                </div>
+            </div>
+
+            <!-- Scroll indicator to dish section -->
+            <div id="scroll-indicator-dish" class="scroll-ind-hidden">
+                <span>Speaking of Thai food... keep scrolling!</span>
+                <div class="arrow-bounce">↓</div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════
+                 FAVORITE DISH SECTION
+                 ═══════════════════════════════════════════════════ -->
+            <div id="dish-section">
+                <h2 class="dish-headline">Pick your favorite dish! 😋</h2>
+                <div class="dish-grid">
+                    <div class="dish-card" data-dish="normal">
+                        <img src="assets/dish_grilled_pork.png" alt="Grilled Pork">
+                        <div class="dish-name">Grilled Pork</div>
+                    </div>
+                    <div class="dish-card" data-dish="normal">
+                        <img src="assets/dish_basil_egg.png" alt="Stir-fried Basil with Egg">
+                        <div class="dish-name">Basil & Egg</div>
+                    </div>
+                    <div class="dish-card" data-dish="normal">
+                        <img src="assets/dish_mango_sticky_rice.png" alt="Mango Sticky Rice">
+                        <div class="dish-name">Mango Sticky Rice</div>
+                    </div>
+                    <div class="dish-card" data-dish="secret">
+                        <img src="assets/dish_secret.png" alt="Secret Dish">
+                        <div class="dish-name">Secret Dish</div>
+                    </div>
+                </div>
+
+                <!-- Custom Popup Modal for dish clicks -->
+                <div id="dish-popup-overlay" class="dish-popup-hidden">
+                    <div class="dish-popup-box">
+                        <p id="dish-popup-text"></p>
+                        <button id="dish-popup-btn">Try again</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll indicator to hate section -->
+            <div id="scroll-indicator-hate" class="scroll-ind-hidden">
+                <span>Keep scrolling, one more surprise...</span>
+                <div class="arrow-bounce">↓</div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════
+                 I HATE YOU 3000 SECTION
+                 ═══════════════════════════════════════════════════ -->
+            <div id="hate-section" class="hate-section-hidden" style="display: none;">
+                <h2 class="hate-headline">I Hate You 3000 💔</h2>
+
+                <div id="hate-stage">
+                    <!-- Twinkling Stars -->
+                    <div class="twinkle-star star-1">⭐</div>
+                    <div class="twinkle-star star-2">⭐</div>
+                    <div class="twinkle-star star-3">⭐</div>
+                    <div class="twinkle-star star-4">⭐</div>
+
+                    <!-- Centered content container to keep characters and speech bubbles close -->
+                    <div class="hate-stage-content side-by-side-layout">
+                        <!-- Boy character holding phone (left) -->
+                        <div id="hate-boy-char" class="hate-char-wrapper hate-boy-left">
+                            <img src="assets/boy_phone.png" alt="Boy" class="hate-char-img">
+                            <div id="hate-boy-msg" class="hate-msg-popup js-hidden"></div>
+                            <div id="hate-boy-tag" class="click-me-tag">Tap me! 👆</div>
+                        </div>
+
+                        <!-- Girl character holding phone (right) -->
+                        <div id="hate-girl-char" class="hate-char-wrapper hate-girl-right">
+                            <img src="assets/girl_phone.png" alt="Girl" class="hate-char-img">
+                            <div id="hate-girl-msg" class="hate-msg-popup js-hidden"></div>
+                            <div id="hate-girl-tag" class="click-me-tag js-hidden">Tap me! 👆</div>
+                        </div>
+
+                        <!-- Swiping Machine (hidden initially) -->
+                        <div id="swiper-machine" class="js-hidden">
+                            <img src="assets/swiper_machine.png" alt="Swiper Machine" class="swiper-img">
+                        </div>
+
+                        <!-- Draggable Card (hidden initially) -->
+                        <div id="swipe-card" class="js-hidden" draggable="true">
+                            <div class="swipe-hint">swipe me.!</div>
+                            <img src="assets/swipe_card.png" alt="Card" class="card-img">
+                        </div>
+
+                        <!-- Flying Airplane (hidden initially) -->
+                        <div id="flying-plane" class="js-hidden">
+                            <img src="assets/small_plane.png" alt="Airplane" class="plane-img">
+                        </div>
+
+                        <!-- Dropped Parcel (hidden initially) -->
+                        <div id="dropped-parcel" class="js-hidden">
+                            <div id="parcel-tag" class="click-me-tag">tap me to open.</div>
+                            <img src="assets/small_parcel.png" alt="Parcel" class="parcel-img">
+                        </div>
+
+                        <!-- Revealed Ticket (hidden initially) -->
+                        <div id="revealed-ticket" class="js-hidden">
+                            <img src="assets/trip_ticket.png" alt="Ticket" class="ticket-img">
+                            <div class="ticket-revealed-text">continue moving below</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll indicator to last section (To Do List) -->
+            <div id="scroll-indicator-2" class="scroll-ind-hidden">
+                <span>Let's check the to do list... 📝</span>
+                <div class="arrow-bounce">↓</div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════
+                 TO DO LIST (THAILAND TRAVEL) SECTION
+                 ═══════════════════════════════════════════════════ -->
+            <div id="last-section">
+                <h2 class="last-headline">To Do List 📝✨</h2>
+                
+                <div id="last-stage">
+                    <!-- Friends facing back (visible initially) -->
+                    <div id="travel-friends" class="travel-friends-wrapper">
+                        <img src="assets/friends_back.png" alt="Friends Facing Back" class="travel-friends-img">
+                        <div class="click-me-tag">Tap us! 👆</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll indicator to final mystery gift -->
+            <div id="scroll-indicator-last" class="scroll-ind-hidden">
+                <span>And now, your final surprise... 🎁</span>
+                <div class="arrow-bounce">↓</div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════
+                 MYSTERY GIFT SECTION
+                 ═══════════════════════════════════════════════════ -->
+            <div id="mystery-section">
+                <h2 id="mystery-title">Open Your Mystery Gift 🎁</h2>
+                <div id="gift-box-container">
+                    <div id="gift-box">
+                        <div class="gift-lid">
+                            <div class="gift-bow"></div>
+                        </div>
+                        <div class="gift-body">
+                            <div class="gift-ribbon-v"></div>
+                            <div class="gift-ribbon-h"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="scroll-wrapper" class="scroll-collapsed">
+                    <div class="scroll-roller scroll-top-roller"></div>
+                    <div class="scroll-paper-body">
+                        <div id="scroll-typed-content"></div>
+                        <div id="typing-cursor">|</div>
+                    </div>
+                    <div class="scroll-roller scroll-bottom-roller"></div>
+                </div>
+            </div>
+
+            <!-- Bottom spacer so scroll message is never clipped -->
+            <div style="height: 120px;"></div>
+        </div>
+    </section>
+
+    <!-- Fullscreen portal transition overlay -->
+    <div id="portal-transition-overlay" class="portal-transition-overlay"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

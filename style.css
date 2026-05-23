@@ -1,0 +1,2054 @@
+/* =====================================================================
+   DESIGN TOKENS
+   ===================================================================== */
+:root {
+    --horror-green: #1aff5c;
+    --horror-red: #e74c3c;
+    --horror-dark: #020504;
+
+    --cute-bg: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 50%, #ff9ebb 100%);
+    --cute-primary: #ff477e;
+    --cute-card-bg: rgba(255, 255, 255, 0.88);
+
+    --parchment-bg: #fdf8ef;
+    --parchment-border: #c9a06c;
+
+    --sans: 'Outfit', sans-serif;
+    --cursive: 'Pacifico', cursive;
+    --horror: 'Creepster', cursive;
+}
+
+/* =====================================================================
+   RESET
+   ===================================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: var(--sans);
+    background: #020504;
+    color: #fff;
+}
+
+/* =====================================================================
+   STAGE HELPERS
+   ===================================================================== */
+.stage {
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+}
+
+.hidden-stage {
+    display: none !important;
+}
+
+.active-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.js-hidden {
+    display: none !important;
+}
+
+/* Avoid visual flash when page is reloaded and restores To Do List state */
+.preload-todo #horror-stage,
+.preload-todo #horror-canvas {
+    display: none !important;
+}
+.preload-todo #cute-stage {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+}
+.preload-todo #hate-section {
+    display: flex !important;
+}
+.preload-todo body {
+    background: var(--cute-bg) !important;
+}
+
+/* =====================================================================
+   HORROR CANVAS (fog / particles / lightning)
+   ===================================================================== */
+#horror-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* =====================================================================
+   HORROR STAGE
+   ===================================================================== */
+#horror-stage {
+    background: radial-gradient(ellipse at 50% 60%, #0a1f0e 0%, #020504 70%);
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+/* Dark vignette crush */
+.vignette-overlay {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.92) 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Random ambient flicker */
+#flicker-overlay {
+    position: absolute; inset: 0;
+    background: transparent;
+    pointer-events: none;
+    z-index: 3;
+    mix-blend-mode: overlay;
+}
+
+#flicker-overlay.flash {
+    background: rgba(20, 255, 80, 0.06);
+}
+
+/* =====================================================================
+   ZOMBIE CONTENT
+   ===================================================================== */
+/* =====================================================================
+   CONFETTI CANVAS
+   ===================================================================== */
+#confetti-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 99; /* above candle/wish but below jumpscare overlay */
+    pointer-events: none;
+}
+
+/* =====================================================================
+   CANDLE BLOWING SCENE (PHASE A & B)
+   ===================================================================== */
+#candle-content-wrapper, #wish-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    text-align: center;
+    gap: 32px;
+    position: relative;
+    width: 100%;
+}
+
+#candle-scene {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+.emoji-char {
+    font-size: 6.5rem;
+    line-height: 1;
+    display: inline-block;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.person-emoji {
+    transform: scaleX(-1); /* mirror girl to face right */
+}
+
+#candle-scene:hover .person-emoji {
+    transform: scaleX(-1) scale(1.05);
+}
+
+.cake-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#candle-scene:hover .cake-emoji {
+    transform: scale(1.05);
+}
+
+/* Glowing candle flame */
+.candle-flame {
+    position: absolute;
+    width: 14px;
+    height: 25px;
+    background: radial-gradient(ellipse at bottom, #ffffff 0%, #ffdf6d 40%, #ff8c00 80%, #ff3300 100%);
+    border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%) scale(1);
+    box-shadow: 
+        0 -2px 10px #ffdf6d,
+        0 -4px 20px #ff8c00,
+        0 0 30px #ff3300;
+    animation: flameFlicker 0.1s infinite alternate;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: bottom center;
+}
+
+.candle-flame.extinguished {
+    transform: translateX(-50%) scale(0) !important;
+    opacity: 0 !important;
+}
+
+@keyframes flameFlicker {
+    0% {
+        transform: translateX(-50%) skewX(-2deg) scaleY(0.95);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateX(-50%) skewX(3deg) scaleY(1.05);
+        opacity: 1;
+    }
+}
+
+/* Blowing wind animation */
+.wind-puff {
+    position: absolute;
+    font-size: 2.5rem;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.9;
+    animation: windFly 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes windFly {
+    0% {
+        transform: translate(-10px, -20px) scale(0.2);
+        opacity: 0;
+    }
+    30% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(110px, -25px) scale(1.3);
+        opacity: 0;
+    }
+}
+
+/* Sweet text prompts */
+.sweet-prompt {
+    font-family: var(--sans);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffb3c1;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 12px 28px;
+    border-radius: 50px;
+    border: 1.5px solid rgba(255, 71, 126, 0.3);
+    box-shadow: 0 0 15px rgba(255, 71, 126, 0.15);
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    user-select: none;
+    cursor: pointer;
+}
+
+#candle-scene:hover + .sweet-prompt,
+.sweet-prompt:hover {
+    color: #fff;
+    background: rgba(255, 71, 126, 0.2);
+    border-color: rgba(255, 71, 126, 0.6);
+    box-shadow: 0 0 25px rgba(255, 71, 126, 0.4);
+    transform: translateY(-2px);
+}
+
+.sweet-prompt-pulse {
+    font-family: var(--sans);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ffb3c1;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 24px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 71, 126, 0.2);
+    box-shadow: 0 0 12px rgba(255, 71, 126, 0.1);
+    letter-spacing: 1px;
+    animation: sweetPulse 2s ease-in-out infinite;
+    user-select: none;
+}
+
+@keyframes sweetPulse {
+    0%, 100% {
+        box-shadow: 0 0 12px rgba(255, 71, 126, 0.1);
+        border-color: rgba(255, 71, 126, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(255, 71, 126, 0.35);
+        border-color: rgba(255, 71, 126, 0.5);
+        color: #fff;
+    }
+}
+
+/* Birthday Wish Text style */
+.wish-text {
+    font-family: var(--cursive);
+    font-size: 2.8rem;
+    color: var(--cute-primary);
+    text-shadow: 
+        0 2px 5px rgba(0, 0, 0, 0.5),
+        2px 2px 0px #fff, 
+        4px 4px 15px rgba(255,71,126,0.4);
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+    animation: floatTitle 4s ease-in-out infinite alternate;
+}
+
+/* ZOMBIE FRAME — breathing, twitching, alive */
+#zombie-frame {
+    position: relative;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid rgba(255, 71, 126, 0.35);
+    box-shadow:
+        0 0 40px rgba(255, 71, 126, 0.4),
+        0 0 80px rgba(255, 71, 126, 0.15),
+        inset 0 0 30px rgba(0,0,0,0.2);
+    overflow: hidden;
+    animation: zombieBreathe 4s ease-in-out infinite;
+    transition: all 0.3s ease;
+}
+
+#zombie-frame:hover {
+    border-color: rgba(255, 71, 126, 0.6);
+    box-shadow:
+        0 0 60px rgba(255, 71, 126, 0.7),
+        0 0 120px rgba(255, 71, 126, 0.3),
+        inset 0 0 40px rgba(0,0,0,0.3);
+    transform: scale(1.03);
+}
+
+#zombie-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    filter: contrast(1.05) brightness(0.95);
+    transition: filter 0.3s;
+}
+
+#zombie-frame:hover #zombie-img {
+    filter: contrast(1.1) brightness(0.9);
+}
+
+/* CRT scan line */
+.scan-line {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0,0,0,0.15) 2px,
+        rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+/* Static noise overlay */
+.static-noise {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 3;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    background-size: 128px;
+    mix-blend-mode: overlay;
+    animation: noiseShift 0.2s steps(3) infinite;
+}
+
+#zombie-frame:hover .static-noise {
+    opacity: 0;
+}
+
+/* Click prompt */
+#click-prompt {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(0,0,0,0.9);
+    color: var(--horror-green);
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-family: var(--horror);
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    border: 1px solid rgba(26,255,92,0.3);
+    box-shadow: 0 0 15px rgba(26,255,92,0.15);
+    animation: promptPulse 2s ease-in-out infinite;
+    user-select: none;
+}
+
+.prompt-icon {
+    font-size: 1.3rem;
+    animation: skullSpin 3s linear infinite;
+}
+
+/* =====================================================================
+   JUMPSCARE OVERLAY
+   ===================================================================== */
+#jumpscare-overlay {
+    position: fixed; inset: 0;
+    width: 100vw; height: 100vh;
+    background: #000;
+    z-index: 99999;
+    overflow: hidden;
+}
+
+#jumpscare-img {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 110vw; height: 110vh;
+    object-fit: cover;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.blood-vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle, transparent 10%, rgba(80,0,0,0.7) 100%);
+    pointer-events: none;
+}
+
+.static-fullscreen {
+    position: absolute; inset: 0;
+    opacity: 0.3;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+    background-size: 128px;
+    mix-blend-mode: overlay;
+    animation: noiseShift 0.08s steps(4) infinite;
+    pointer-events: none;
+}
+
+/* White flash transition */
+#white-flash {
+    position: fixed; inset: 0;
+    background: #fff;
+    z-index: 100000;
+    animation: whiteFlashAnim 1.2s ease-out forwards;
+}
+
+@keyframes whiteFlashAnim {
+    0% { opacity: 1; }
+    60% { opacity: 1; }
+    100% { opacity: 0; pointer-events: none; }
+}
+
+/* =====================================================================
+   CUTE BIRTHDAY STAGE
+   ===================================================================== */
+#cute-stage {
+    background: var(--cute-bg);
+    min-height: 100vh;
+    padding: 60px 20px 40px;
+    position: relative;
+}
+
+#hearts-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+#cute-content-wrapper {
+    position: relative;
+    z-index: 2;
+    max-width: 800px; width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 50px;
+}
+
+#cute-header { text-align: center; color: #4a1525; }
+
+.birthday-title {
+    font-family: var(--cursive);
+    font-size: 3.5rem;
+    color: var(--cute-primary);
+    text-shadow: 2px 2px 0px #fff, 4px 4px 15px rgba(255,71,126,0.3);
+    margin-bottom: 10px;
+    animation: floatTitle 4s ease-in-out infinite alternate;
+}
+
+#cute-subtitle {
+    font-size: 1.1rem; font-weight: 300;
+    opacity: 0.9; letter-spacing: 0.5px;
+}
+
+/* Polaroid */
+#photo-gallery {
+    display: flex; justify-content: center;
+    flex-wrap: wrap; gap: 30px; width: 100%; margin: 20px 0;
+}
+
+.polaroid-card {
+    background: var(--cute-card-bg);
+    padding: 16px 16px 24px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 3px 5px rgba(0,0,0,0.05);
+    border-radius: 4px; width: 250px;
+    backdrop-filter: blur(5px);
+    transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), box-shadow 0.4s;
+    border: 1px solid rgba(255,255,255,0.6);
+}
+
+.card-left  { transform: rotate(-4deg); }
+.card-right { transform: rotate(4deg);  }
+
+.polaroid-card:hover {
+    transform: scale(1.08) rotate(0deg) translateY(-10px);
+    box-shadow: 0 20px 35px rgba(255,71,126,0.25), 0 10px 15px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.polaroid-img-wrapper {
+    width: 100%; height: 220px;
+    overflow: hidden; border-radius: 2px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.polaroid-img {
+    width: 100%; height: 100%;
+    object-fit: cover; transition: transform 0.5s;
+}
+.polaroid-card:hover .polaroid-img { transform: scale(1.05); }
+
+.polaroid-caption {
+    font-family: var(--cursive);
+    font-size: 1.3rem; color: #4a1525;
+    text-align: center; margin-top: 15px;
+}
+
+/* Scroll indicator */
+#scroll-indicator {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px; color: var(--cute-primary);
+    font-weight: 600; font-size: 0.95rem;
+    letter-spacing: 0.5px; margin: 40px 0;
+}
+
+.arrow-bounce {
+    font-size: 1.5rem;
+    animation: bounceY 1.5s infinite ease-in-out;
+}
+
+/* Mystery Section */
+#mystery-section {
+    width: 100%; display: flex; flex-direction: column;
+    align-items: center; gap: 30px;
+    padding-top: 60px;
+    border-top: 2px dashed rgba(255,71,126,0.2);
+}
+
+#mystery-title {
+    font-family: var(--cursive);
+    color: #4a1525; font-size: 2rem; text-align: center;
+}
+
+/* =====================================================================
+   GIFT BOX (pure CSS 3D)
+   ===================================================================== */
+#gift-box-container {
+    width: 140px; height: 150px;
+    cursor: pointer; margin: 20px 0;
+    perspective: 600px;
+}
+
+#gift-box {
+    position: relative; width: 100%; height: 100%;
+    animation: boxFloat 2.5s ease-in-out infinite;
+}
+
+#gift-box:hover { animation: boxWiggle 0.4s infinite linear; }
+
+.gift-body {
+    position: absolute; bottom: 0;
+    width: 120px; height: 90px; left: 10px;
+    background: linear-gradient(135deg, #ff5c8a, #ff477e);
+    border-radius: 6px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15), inset 0 -3px 6px rgba(0,0,0,0.1);
+}
+
+.gift-ribbon-v {
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    width: 16px; height: 100%;
+    background: linear-gradient(to right, #ffecd2, #fdf6e2, #ffecd2);
+    box-shadow: inset 0 0 3px rgba(0,0,0,0.05);
+}
+
+.gift-ribbon-h {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 100%; height: 16px;
+    background: linear-gradient(to bottom, #ffecd2, #fdf6e2, #ffecd2);
+}
+
+.gift-lid {
+    position: absolute; top: 10px; left: 2px;
+    width: 136px; height: 28px;
+    background: linear-gradient(135deg, #ff477e, #e8406f);
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    z-index: 10;
+    transition: transform 1s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.8s;
+    transform-origin: left center;
+}
+
+.gift-bow {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    width: 30px; height: 20px;
+    background: radial-gradient(ellipse, #ffecd2, #ffd9a8);
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#gift-box.opened .gift-lid {
+    transform: rotate(-70deg) translateY(-40px);
+    opacity: 0;
+}
+
+/* =====================================================================
+   SCROLL PARCHMENT
+   ===================================================================== */
+#scroll-wrapper {
+    width: 100%; max-width: 550px;
+    position: relative; margin: 40px auto;
+    overflow: hidden;
+    transition: max-height 3s cubic-bezier(0.1,0.8,0.2,1), opacity 1s ease;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    border-radius: 6px;
+}
+
+.scroll-collapsed {
+    max-height: 0; opacity: 0;
+    pointer-events: none;
+}
+
+.scroll-expanded {
+    max-height: 2000px;  /* FIXED: large enough for any message */
+    opacity: 1;
+}
+
+.scroll-paper-body {
+    background: var(--parchment-bg);
+    border-left: 12px double var(--parchment-border);
+    border-right: 12px double var(--parchment-border);
+    padding: 35px 35px 50px;
+    min-height: 200px;
+    font-size: 1.15rem; color: #4a3424;
+    line-height: 1.8; text-align: center;
+    box-shadow: inset 0 0 40px rgba(200,150,100,0.15);
+    position: relative;
+}
+
+.scroll-paper-body::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(200,160,110,0.08) 0%, transparent 8%, transparent 92%, rgba(200,160,110,0.08) 100%);
+    pointer-events: none;
+}
+
+.scroll-roller {
+    height: 18px;
+    background: linear-gradient(to right, #7a5530, #c9a06c, #7a5530);
+    border-radius: 5px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    position: relative; z-index: 10;
+}
+
+#scroll-typed-content {
+    font-family: var(--sans);
+    font-weight: 400; letter-spacing: 0.3px;
+    white-space: pre-wrap; display: inline;
+}
+
+#typing-cursor {
+    display: inline;
+    font-weight: 200;
+    color: var(--cute-primary);
+    animation: cursorBlink 0.6s step-end infinite;
+}
+
+/* =====================================================================
+   SPARKLE PARTICLES
+   ===================================================================== */
+.sparkle-particle {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999;
+    animation: particleFly 1.4s cubic-bezier(0.1,0.8,0.25,1) forwards;
+}
+
+/* =====================================================================
+   KEYFRAME ANIMATIONS
+   ===================================================================== */
+
+/* Horror title flicker */
+@keyframes titleFlicker {
+    0%, 90%, 100% { opacity: 1; }
+    91% { opacity: 0.3; }
+    92% { opacity: 0.9; }
+    93% { opacity: 0.4; transform: skewX(-2deg); }
+    94% { opacity: 1; transform: skewX(0); }
+    95% { opacity: 0.5; }
+    96% { opacity: 1; }
+}
+
+/* Zombie breathing */
+@keyframes zombieBreathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+/* Zombie twitching on hover */
+@keyframes zombieTwitch {
+    0%   { transform: translate(2px, 1px) rotate(0.5deg) scale(1.02); }
+    20%  { transform: translate(-3px, -1px) rotate(-0.8deg) scale(1.03); }
+    40%  { transform: translate(1px, 3px) rotate(0.3deg) scale(1.01); }
+    60%  { transform: translate(-2px, -2px) rotate(-0.5deg) scale(1.04); }
+    80%  { transform: translate(3px, 0px) rotate(0.7deg) scale(1.02); }
+    100% { transform: translate(-1px, 2px) rotate(-0.3deg) scale(1.03); }
+}
+
+/* Static noise */
+@keyframes noiseShift {
+    0%   { background-position: 0 0; }
+    33%  { background-position: -64px -32px; }
+    66%  { background-position: 32px -64px; }
+    100% { background-position: -32px 32px; }
+}
+
+/* Click prompt pulse */
+@keyframes promptPulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(26,255,92,0.15); }
+    50% { box-shadow: 0 0 25px rgba(26,255,92,0.4); border-color: rgba(26,255,92,0.6); }
+}
+
+/* Skull icon spin */
+@keyframes skullSpin {
+    0%, 80% { transform: rotate(0deg); }
+    85% { transform: rotate(15deg); }
+    90% { transform: rotate(-10deg); }
+    95% { transform: rotate(5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Floating title */
+@keyframes floatTitle {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+}
+
+/* Arrow bounce */
+@keyframes bounceY {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+}
+
+/* Gift box float */
+@keyframes boxFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* Gift box wiggle */
+@keyframes boxWiggle {
+    0%   { transform: rotate(0deg); }
+    25%  { transform: rotate(-6deg) scale(1.04); }
+    50%  { transform: rotate(0deg); }
+    75%  { transform: rotate(6deg) scale(1.04); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Confetti fly */
+@keyframes particleFly {
+    0%   { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* Cursor blink */
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Scare body shake */
+.scare-shake {
+    animation: violentShake 0.08s infinite !important;
+}
+
+@keyframes violentShake {
+    0%   { transform: translate(6px, 8px) rotate(1.5deg); }
+    25%  { transform: translate(-8px, -6px) rotate(-2deg); }
+    50%  { transform: translate(10px, -10px) rotate(1.5deg); }
+    75%  { transform: translate(-6px, 8px) rotate(-1deg); }
+    100% { transform: translate(8px, -4px) rotate(2deg); }
+}
+
+/* =====================================================================
+   RESPONSIVE
+   ===================================================================== */
+@media (max-width: 600px) {
+    .creepy-text { font-size: 1.8rem; }
+    #zombie-frame { width: 230px; height: 230px; }
+    .birthday-title { font-size: 2.3rem; }
+    .polaroid-card { width: 200px; }
+    .polaroid-img-wrapper { height: 170px; }
+    .scroll-paper-body { padding: 20px 18px 40px; font-size: 1rem; }
+    #gift-box-container { width: 110px; height: 120px; }
+    .money-headline { font-size: 1.5rem !important; }
+    .char-img { width: 120px !important; height: 120px !important; }
+    #money-stage { height: 200px !important; }
+    #money-message p { font-size: 1rem !important; padding: 14px 18px !important; }
+    .hate-char-img { width: 120px !important; height: 120px !important; }
+    /* Unified tall stage height preserved on mobile */
+    .hate-msg-popup { font-size: 0.85rem !important; padding: 8px 12px !important; top: -20px !important; }
+    .hate-floating-bubble { font-size: 0.8rem !important; padding: 6px 12px !important; }
+}
+
+/* =====================================================================
+   CLUB 18 SECTION
+   ===================================================================== */
+#club18-section {
+    width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 30px;
+    padding-top: 40px;
+}
+
+.club18-headline {
+    font-family: var(--cursive);
+    font-size: 2rem;
+    color: #4a1525;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.club18-stage {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    min-height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.club18-char {
+    position: relative;
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    cursor: pointer;
+}
+
+.club18-char.club18-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.club18-char.club18-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(20px) scale(0.8);
+    position: absolute;
+}
+
+.club18-char img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
+    transition: transform 0.3s;
+}
+
+.club18-char:hover img {
+    transform: scale(1.05) rotate(-2deg);
+}
+
+.club18-msg-popup {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #fff;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-family: var(--cursive);
+    font-size: 1.1rem;
+    color: #ff477e;
+    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(255,71,126,0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+    z-index: 10;
+}
+
+.club18-msg-popup::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+}
+
+.club18-msg-visible {
+    opacity: 1 !important;
+    transform: translateX(-50%) translateY(0) !important;
+}
+
+/* Also add the new scroll indicator to the list of shared styling */
+#scroll-indicator-money,
+#scroll-indicator-dish,
+#scroll-indicator-hate,
+#scroll-indicator-2,
+#scroll-indicator-last {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px; color: var(--cute-primary);
+    font-weight: 600; font-size: 0.95rem;
+    letter-spacing: 0.5px; margin: 40px 0;
+}
+
+/* =====================================================================
+   CHOCOLATE / MONEY SENDING SECTION
+   ===================================================================== */
+#money-section {
+    width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 24px;
+    padding-top: 50px;
+}
+
+.money-headline {
+    font-family: var(--cursive);
+    font-size: 1.9rem;
+    color: #4a1525;
+    text-align: center;
+    text-shadow: 1px 1px 0 #fff;
+}
+
+/* Character Stage — the arena where boy & girl face each other */
+#money-stage {
+    position: relative;
+    width: 100%;
+    max-width: 550px;
+    height: 250px;
+    overflow: visible;
+}
+
+/* Character wrappers */
+.char-wrapper {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px;
+    transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 5;
+}
+
+.char-img {
+    width: 160px; height: 160px;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
+    transition: transform 0.3s;
+}
+
+.char-wrapper:hover .char-img {
+    transform: scale(1.05);
+}
+
+/* Boy centered state (initial) */
+.boy-centered {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+/* Boy moved to left */
+.boy-left {
+    left: 5%;
+    transform: translateY(-50%);
+    cursor: default;
+}
+
+/* Click-me tag */
+.click-me-tag {
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    font-family: var(--cursive);
+    font-size: 0.95rem;
+    color: var(--cute-primary);
+    background: rgba(255,255,255,0.9);
+    padding: 5px 14px;
+    border-radius: 20px;
+    box-shadow: 0 3px 8px rgba(255,71,126,0.2);
+    animation: tagBounce 1.5s infinite ease-in-out;
+    white-space: nowrap;
+    z-index: 15;
+}
+
+.click-me-tag.tag-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+@keyframes tagBounce {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, -6px); }
+}
+
+/* Girl hidden state */
+.girl-hidden {
+    right: 5%;
+    transform: translateY(-50%) scale(0);
+    opacity: 0;
+    left: auto;
+}
+
+/* Girl visible state */
+.girl-visible {
+    right: 5%;
+    left: auto;
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
+}
+
+/* Money note container */
+#money-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    overflow: visible;
+}
+
+/* Individual floating money note (JS driven) */
+.money-note {
+    position: absolute;
+    font-size: 1.8rem;
+    pointer-events: none;
+    z-index: 11;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* Money sweet message */
+#money-message {
+    width: 100%;
+    text-align: center;
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+.money-msg-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+.money-msg-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#money-message p {
+    display: inline-block;
+    font-family: var(--cursive);
+    font-size: 1.15rem;
+    color: #6b2140;
+    background: rgba(255,255,255,0.8);
+    padding: 18px 28px;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(255,71,126,0.15);
+    line-height: 1.7;
+    max-width: 500px;
+    backdrop-filter: blur(4px);
+}
+
+/* Second scroll indicator (hidden until money animation done) */
+.scroll-ind-hidden {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scroll-ind-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* =====================================================================
+   FAVORITE DISH SECTION
+   ===================================================================== */
+#dish-section {
+    width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 30px;
+    padding-top: 50px;
+    border-top: 2px dashed rgba(255,71,126,0.2);
+    margin-top: 20px;
+}
+
+.dish-headline {
+    font-family: var(--cursive);
+    font-size: 2rem;
+    color: #4a1525;
+    text-align: center;
+}
+
+.dish-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 600px;
+    width: 100%;
+}
+
+.dish-card {
+    background: var(--cute-card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    display: flex; flex-direction: column; align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 2px solid transparent;
+}
+
+.dish-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 25px rgba(255,71,126,0.25);
+    border: 2px solid var(--cute-primary);
+}
+
+.dish-card img {
+    width: 100%;
+    max-width: 160px;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.dish-name {
+    font-family: var(--cursive);
+    font-size: 1.2rem;
+    color: #6b2140;
+    text-align: center;
+}
+
+/* Dish Popup Overlay */
+#dish-popup-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100000;
+    display: flex; justify-content: center; align-items: center;
+    opacity: 1; transition: opacity 0.3s;
+}
+
+#dish-popup-overlay.dish-popup-hidden {
+    opacity: 0; pointer-events: none;
+}
+
+.dish-popup-box {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 90%; width: 400px;
+    box-shadow: 0 20px 50px rgba(255,71,126,0.3);
+    transform: scale(1);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#dish-popup-overlay.dish-popup-hidden .dish-popup-box {
+    transform: scale(0.8) translateY(20px);
+}
+
+#dish-popup-text {
+    font-family: var(--cursive);
+    font-size: 1.6rem;
+    color: #4a1525;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+#dish-popup-btn {
+    background: linear-gradient(135deg, #ff477e, #ff9ebb);
+    color: white;
+    font-family: var(--sans);
+    font-weight: 600; font-size: 1.1rem;
+    border: none; padding: 12px 30px;
+    border-radius: 30px; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255,71,126,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#dish-popup-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255,71,126,0.6);
+}
+
+#scroll-indicator-dish span {
+    font-family: var(--cursive);
+    font-size: 1.5rem;
+    color: #ff477e;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+}
+
+#scroll-indicator-hate span {
+    font-family: var(--cursive);
+    font-size: 1.5rem;
+    color: #ff477e;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+}
+
+/* =====================================================================
+   I HATE YOU 3000 SECTION
+   ===================================================================== */
+#hate-section {
+    width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 24px;
+    padding-top: 50px;
+    border-top: 2px dashed rgba(255,71,126,0.2);
+    margin-top: 20px;
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+.hate-section-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+.hate-section-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hate-headline {
+    font-family: var(--cursive);
+    font-size: 2rem;
+    color: #4a1525;
+    text-align: center;
+    text-shadow: 1px 1px 0 #fff;
+}
+
+#hate-stage {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 650px;
+    overflow: hidden;
+    background: transparent;
+    margin: 20px 0;
+}
+
+.hate-stage-content {
+    max-width: 600px;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    position: relative;
+    overflow: visible;
+}
+
+.hate-char-wrapper {
+    position: absolute;
+    bottom: 390px; /* Stands on balcony platform by default */
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px;
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 5;
+}
+
+.hate-char-img {
+    width: 160px; height: 160px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
+    transition: transform 0.3s;
+}
+
+.hate-char-wrapper:hover .hate-char-img {
+    transform: scale(1.05);
+}
+
+/* Boy left state */
+.hate-boy-left {
+    left: 25%;
+    bottom: 50px;
+    transform: none;
+    cursor: pointer;
+}
+
+/* Girl right state */
+.hate-girl-right {
+    right: 25%;
+    bottom: 50px;
+    left: auto;
+    transform: none;
+    cursor: pointer;
+}
+
+/* Swiper Machine */
+#swiper-machine {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+}
+.swiper-img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+/* Swipe Card */
+#swipe-card {
+    position: absolute;
+    top: 100px;
+    right: 35%;
+    z-index: 10;
+    cursor: grab;
+    touch-action: none;
+}
+#swipe-card:active {
+    cursor: grabbing;
+}
+.card-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    pointer-events: none;
+}
+.swipe-hint {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #4a1525;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255, 71, 126, 0.15);
+}
+.swipe-hint::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+}
+
+/* Airplane */
+#flying-plane {
+    position: absolute;
+    bottom: 50px;
+    left: -150px;
+    z-index: 6;
+}
+.plane-img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+.plane-fly-anim {
+    animation: planeFly 2.5s ease-in-out forwards;
+}
+@keyframes planeFly {
+    0% { transform: translate(0, 0) rotate(15deg); }
+    50% { transform: translate(45vw, -200px) rotate(5deg); }
+    100% { transform: translate(90vw, -400px) rotate(20deg); }
+}
+
+/* Parcel */
+#dropped-parcel {
+    position: absolute;
+    top: -150px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 7;
+    cursor: pointer;
+}
+.parcel-img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+.parcel-drop-anim {
+    animation: parcelDrop 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+@keyframes parcelDrop {
+    0% { top: -150px; transform: translateX(-50%) rotate(-15deg); opacity: 0; }
+    30% { opacity: 1; }
+    100% { top: 250px; transform: translateX(-50%) rotate(0deg); opacity: 1; }
+}
+
+/* Ticket Reveal */
+#revealed-ticket {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    z-index: 8;
+    text-align: center;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.ticket-img {
+    width: 250px;
+    height: auto;
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.3));
+    border-radius: 10px;
+}
+.ticket-revealed-text {
+    margin-top: 20px;
+    font-family: var(--sans);
+    font-weight: 700;
+    color: #4a1525;
+    background: #fff;
+    padding: 8px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    display: inline-block;
+    border: 1px solid rgba(255, 71, 126, 0.2);
+}
+.ticket-visible {
+    transform: translateX(-50%) scale(1) !important;
+}
+
+/* Speech bubbles/popups in hate section */
+.hate-msg-popup {
+    position: absolute;
+    top: -60px; /* moved up to avoid overlapping faces */
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #fff;
+    padding: 12px 18px;
+    border-radius: 20px;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 1rem;
+    color: #4a1525;
+    white-space: normal;
+    text-align: center;
+    max-width: 200px;
+    width: max-content;
+    box-shadow: 0 8px 20px rgba(255,71,126,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+    z-index: 10;
+    border: 2px solid rgba(255, 71, 126, 0.2);
+}
+
+.hate-msg-popup::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px 8px 0;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+}
+
+.hate-msg-visible {
+    opacity: 1 !important;
+    transform: translateX(-50%) translateY(0) !important;
+}
+
+/* =====================================================================
+   LAST BUT NOT THE LEAST (THAILAND TRAVEL) SECTION
+   ===================================================================== */
+#last-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding-top: 60px;
+    border-top: 2px dashed rgba(255, 71, 126, 0.2);
+    margin-top: 20px;
+    text-align: center;
+}
+
+.last-headline {
+    font-family: var(--cursive);
+    font-size: 2.2rem;
+    color: #4a1525;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 0px #fff;
+}
+
+#last-stage {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 16 / 9;
+    min-height: 350px;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.75);
+    box-shadow: 0 15px 35px rgba(255, 71, 126, 0.15);
+    margin: 0 auto;
+}
+
+.travel-friends-wrapper {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
+    z-index: 10;
+}
+
+.travel-friends-img {
+    width: 250px;
+    height: auto;
+    object-fit: contain;
+    mix-blend-mode: darken;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.travel-friends-wrapper:hover .travel-friends-img {
+    transform: scale(1.05) translateY(-5px);
+}
+
+.travel-friends-wrapper .click-me-tag {
+    bottom: -15px;
+}
+
+#portal-transition-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    background: radial-gradient(circle, #ffcbd8 0%, #ff477e 100%);
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.01);
+    border-radius: 50%;
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease, border-radius 1.2s ease;
+    box-shadow: 0 0 100px 30px rgba(255, 71, 126, 0.95);
+}
+
+#portal-transition-overlay.active {
+    transform: scale(1);
+    opacity: 1;
+    border-radius: 0;
+    pointer-events: auto;
+    box-shadow: none;
+}
+
+/* =====================================================================
+   RESPONSIVE FOR TRAVEL SECTION
+   ===================================================================== */
+@media (max-width: 600px) {
+    #last-stage {
+        aspect-ratio: 4 / 3;
+        min-height: 250px;
+    }
+    .last-headline {
+        font-size: 1.8rem;
+    }
+    .travel-friends-img {
+        width: 200px;
+    }
+}
+
+
+/* =====================================================================
+   I HATE YOU 3000 - FALLING ANIMATION SCENE
+   ===================================================================== */
+/* Shake animation for when boy lands */
+.scene-shake {
+    animation: sceneShakeEffect 0.5s ease-out;
+}
+
+@keyframes sceneShakeEffect {
+    0%, 100% { transform: translate(0, 0); }
+    10%, 30%, 50%, 70%, 90% { transform: translate(-4px, -2px); }
+    20%, 40%, 60%, 80% { transform: translate(4px, 2px); }
+}
+
+.balcony-platform {
+    position: absolute;
+    top: 260px;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(5px);
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 4px;
+    z-index: 8;
+}
+
+.balcony-railing {
+    position: absolute;
+    top: -24px;
+    left: 0;
+    width: 100%;
+    height: 24px;
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.8) 4px, transparent 4px, transparent 18px);
+    border-top: 3px solid rgba(255,255,255,0.9);
+}
+
+.falling-ground-grass {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(to bottom, #2ecc71, #27ae60);
+    border-top: 4px solid #fff;
+    z-index: 7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ground-label {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.75);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Boy flat on ground inside unified stage */
+.boy-fallen-flat {
+    bottom: 50px !important;
+    left: 32% !important;
+    transform: none !important;
+    animation: none !important;
+}
+.boy-fallen-flat .hate-char-img {
+    transform: rotate(95deg) scaleY(0.7);
+}
+/* Position Boy's bubble closer to his torso/head when flat on ground */
+.boy-fallen-flat #hate-boy-msg {
+    top: 110px !important;
+    left: 60% !important;
+}
+
+/* Girl on ground inside unified stage */
+.girl-ground-state {
+    bottom: 50px !important;
+    left: 48% !important;
+    right: auto !important;
+    transform: scale(0.9) !important;
+    opacity: 1 !important;
+    transition: bottom 1.2s cubic-bezier(0.25, 1, 0.5, 1), left 1.2s ease, right 1.2s ease !important;
+    pointer-events: none;
+}
+/* Position Girl's bubble closer to her head when on ground */
+.girl-ground-state #hate-girl-msg {
+    top: -5px !important;
+}
+
+/* Voice wave speech bubble style */
+.voice-wave-popup {
+    bottom: 75px !important;
+    top: auto !important;
+    border: 3px dashed var(--cute-primary) !important;
+    border-radius: 20px !important;
+    background: #fff5f7 !important;
+    color: var(--cute-primary) !important;
+    box-shadow: 4px 4px 0px var(--cute-primary) !important;
+    animation: voiceWavePulse 1.2s infinite ease-in-out;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200 !important;
+}
+
+.voice-wave-popup::after {
+    border-color: #fff5f7 transparent transparent transparent !important;
+}
+
+@keyframes voiceWavePulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.06); }
+}
+
+/* =====================================================================
+   COMIC & CARTOON CUSTOM STYLES (FALLING SCENE OVERHAUL)
+   ===================================================================== */
+
+/* 1. Cartoon Drifting Clouds */
+.falling-cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.82);
+    border-radius: 100px;
+    filter: blur(1.5px);
+    z-index: 2;
+    pointer-events: none;
+    animation: driftCloud linear infinite;
+}
+
+.falling-cloud::before, .falling-cloud::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.82);
+    border-radius: 50%;
+}
+
+.cloud-1 {
+    width: 90px;
+    height: 30px;
+    top: 40px;
+    animation-duration: 16s;
+    animation-delay: -2s;
+    opacity: 0.85;
+}
+.cloud-1::before { width: 45px; height: 45px; top: -20px; left: 15px; }
+.cloud-1::after { width: 35px; height: 35px; top: -15px; left: 45px; }
+
+.cloud-2 {
+    width: 130px;
+    height: 40px;
+    top: 110px;
+    animation-duration: 22s;
+    animation-delay: -8s;
+    opacity: 0.75;
+}
+.cloud-2::before { width: 60px; height: 60px; top: -30px; left: 20px; }
+.cloud-2::after { width: 45px; height: 45px; top: -20px; left: 65px; }
+
+.cloud-3 {
+    width: 100px;
+    height: 35px;
+    top: 180px;
+    animation-duration: 18s;
+    animation-delay: -12s;
+    opacity: 0.8;
+}
+.cloud-3::before { width: 50px; height: 50px; top: -22px; left: 18px; }
+.cloud-3::after { width: 40px; height: 40px; top: -18px; left: 50px; }
+
+@keyframes driftCloud {
+    0% { left: -160px; }
+    100% { left: 100%; }
+}
+
+/* 2. Twinkling stars */
+.twinkle-star {
+    position: absolute;
+    font-size: 1.15rem;
+    filter: drop-shadow(0 0 4px rgba(255,223,109,0.7));
+    animation: twinkle 1.8s infinite ease-in-out alternate;
+    z-index: 2;
+    pointer-events: none;
+}
+.star-1 { top: 25px; left: 12%; animation-delay: 0s; }
+.star-2 { top: 75px; left: 42%; animation-delay: 0.4s; }
+.star-3 { top: 20px; left: 78%; animation-delay: 0.8s; }
+.star-4 { top: 130px; left: 28%; animation-delay: 1.2s; }
+
+@keyframes twinkle {
+    0% { opacity: 0.25; transform: scale(0.8) rotate(0deg); }
+    100% { opacity: 1; transform: scale(1.2) rotate(15deg); }
+}
+
+/* 3. Decorative garden picket fence */
+.garden-fence {
+    position: absolute;
+    bottom: 42px;
+    left: 0;
+    width: 100%;
+    height: 35px;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    z-index: 4;
+    pointer-events: none;
+}
+.fence-post {
+    width: 12px;
+    height: 100%;
+    background: linear-gradient(to right, #ffffff, #f0f0f0);
+    border-radius: 4px 4px 0 0;
+    border: 1.5px solid #bdc3c7;
+    position: relative;
+}
+.fence-post::after {
+    content: '';
+    position: absolute;
+    top: 35%;
+    left: -12px;
+    width: 36px;
+    height: 4px;
+    background: #f0f0f0;
+    border: 1.5px solid #bdc3c7;
+    z-index: -1;
+}
+
+/* 4. Balcony enhancements (stone layout, hanging lights) */
+.balcony-platform {
+    background: linear-gradient(to bottom, #bdc3c7 0%, #95a5a6 40%, #7f8c8d 100%) !important;
+    border: 3px solid #2c3e50 !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 2px 2px rgba(255, 255, 255, 0.5) !important;
+    height: 22px !important;
+}
+.balcony-railing {
+    border-top: 3px solid #2c3e50 !important;
+    background: repeating-linear-gradient(90deg, #2c3e50, #2c3e50 4px, transparent 4px, transparent 18px) !important;
+}
+.balcony-vines {
+    position: absolute;
+    bottom: -13px;
+    left: 5%;
+    width: 90%;
+    height: 8px;
+    background-image: linear-gradient(135deg, #27ae60 25%, transparent 25%), 
+                      linear-gradient(225deg, #27ae60 25%, transparent 25%);
+    background-size: 6px 6px;
+    background-repeat: repeat-x;
+    opacity: 0.95;
+    z-index: 9;
+}
+.balcony-lights {
+    position: absolute;
+    top: -4px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    pointer-events: none;
+    z-index: 10;
+}
+.balcony-lights .light {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ffeaa7;
+    box-shadow: 0 0 8px 2px #ffeaa7;
+    border: 1px solid #d35400;
+    animation: glowLight 1.2s infinite alternate ease-in-out;
+}
+.balcony-lights .light:nth-child(even) {
+    animation-delay: 0.6s;
+    background: #ff7675;
+    box-shadow: 0 0 8px 2px #ff7675;
+    border-color: #c0392b;
+}
+@keyframes glowLight {
+    0% { opacity: 0.4; filter: brightness(0.85); }
+    100% { opacity: 1; filter: brightness(1.4); }
+}
+
+/* 5. Meadow grass ground details (flowers & cobblestones) */
+.meadow-flowers {
+    position: absolute;
+    top: -14px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.15rem;
+    pointer-events: none;
+    z-index: 8;
+}
+.meadow-flowers .flower {
+    animation: flowerWind 3s infinite ease-in-out alternate;
+    transform-origin: bottom center;
+}
+.meadow-flowers .flower:nth-child(even) {
+    animation-delay: -1.5s;
+    animation-duration: 2.4s;
+}
+@keyframes flowerWind {
+    0% { transform: rotate(-6deg); }
+    100% { transform: rotate(6deg); }
+}
+
+.cobblestones {
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    display: flex;
+    justify-content: space-around;
+    pointer-events: none;
+    z-index: 8;
+    opacity: 0.55;
+}
+.cobblestones .stone {
+    width: 32px;
+    height: 7px;
+    background: #7f8c8d;
+    border: 1px solid #2c3e50;
+    border-radius: 12px;
+}
+
+/* 6. Comic bubble layout & flat shadow overrides */
+.hate-msg-popup, .falling-scene-bubble {
+    background: #fff !important;
+    border: 3.5px solid #2c3e50 !important;
+    border-radius: 20px !important;
+    box-shadow: 4px 4px 0px #2c3e50 !important;
+    font-family: var(--sans) !important;
+    font-weight: 800 !important;
+    transition: opacity 0.4s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+#hate-boy-msg, #falling-boy-msg, .bubble-blue {
+    background: #e1f5fe !important;
+    border-color: #0288d1 !important;
+    color: #01579b !important;
+    box-shadow: 4px 4px 0px #0288d1 !important;
+}
+#hate-boy-msg::after, #falling-boy-msg::after, .bubble-blue::after {
+    border-color: #e1f5fe transparent transparent transparent !important;
+}
+
+#hate-girl-msg, #falling-girl-msg, .bubble-pink {
+    background: #fce4ec !important;
+    border-color: #e91e63 !important;
+    color: #880e4f !important;
+    box-shadow: 4px 4px 0px #e91e63 !important;
+}
+#hate-girl-msg::after, #falling-girl-msg::after, .bubble-pink::after {
+    border-color: #fce4ec transparent transparent transparent !important;
+}
+
+/* 7. Comic "CRASH!" Impact Splash Burst styling */
+.impact-bubble {
+    position: absolute;
+    bottom: 50px;
+    left: 42%;
+    transform: translate(-50%, 0) scale(0);
+    background: linear-gradient(135deg, #f1c40f 0%, #f39c12 50%, #e67e22 100%);
+    color: #fff;
+    font-family: var(--horror);
+    font-size: 2rem;
+    font-weight: 900;
+    padding: 10px 24px;
+    border: 4px solid #000;
+    box-shadow: 5px 5px 0px #000;
+    z-index: 100;
+    clip-path: polygon(
+        0% 20%, 15% 15%, 20% 0%, 50% 12%, 80% 0%, 85% 15%, 100% 20%, 
+        88% 50%, 100% 80%, 85% 85%, 80% 100%, 50% 88%, 20% 100%, 15% 85%, 0% 80%, 12% 50%
+    );
+    pointer-events: none;
+    text-shadow: 2px 2px 0px #000;
+    opacity: 0;
+}
+
+.impact-burst-active {
+    animation: crashImpactBurst 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes crashImpactBurst {
+    0% { transform: translate(-50%, 30px) scale(0) rotate(-15deg); opacity: 0; }
+    20% { transform: translate(-50%, -10px) scale(1.25) rotate(8deg); opacity: 1; }
+    80% { transform: translate(-50%, -10px) scale(1.0) rotate(4deg); opacity: 1; }
+    100% { transform: translate(-50%, -50px) scale(0.7) rotate(0deg); opacity: 0; }
+}
+
+/* 8. Cartoon Dizzy Stars Ring (orbits in an ellipse above fallen boy's head) */
+#dizzy-stars-ring {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 65px;
+    height: 20px;
+    z-index: 99;
+    pointer-events: none;
+}
+/* Reposition dizzy stars above boy's rotated head when flat on ground */
+.boy-fallen-flat #dizzy-stars-ring {
+    top: 30px !important;
+    left: 80% !important;
+    transform: none !important;
+}
+.dizzy-star {
+    position: absolute;
+    font-size: 1rem;
+    animation: dizzyStarAnim 2.2s infinite linear;
+}
+.dizzy-star:nth-child(1) { animation-delay: 0s; }
+.dizzy-star:nth-child(2) { animation-delay: -0.55s; }
+.dizzy-star:nth-child(3) { animation-delay: -1.1s; }
+.dizzy-star:nth-child(4) { animation-delay: -1.65s; }
+
+@keyframes dizzyStarAnim {
+    0% {
+        transform: rotate(0deg) translateX(18px) rotate(0deg) scale(0.85);
+        opacity: 0.3;
+    }
+    50% {
+        transform: rotate(180deg) translateX(18px) rotate(-180deg) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: rotate(360deg) translateX(18px) rotate(-360deg) scale(0.85);
+        opacity: 0.3;
+    }
+}
+
+/* 9. Squash and stretch bounce landing */
+.girl-bounce-land {
+    animation: squashStretch 0.65s ease-out forwards;
+}
+
+@keyframes squashStretch {
+    0% { transform: scale(0.9) rotate(0deg) translateY(0); }
+    40% { transform: scale(1.15, 0.72) rotate(0deg) translateY(10px); }
+    70% { transform: scale(0.86, 1.15) rotate(0deg) translateY(-6px); }
+    90% { transform: scale(1.02, 0.98) rotate(0deg) translateY(1px); }
+    100% { transform: scale(0.9) rotate(0deg) translateY(0); }
+}
+
+
+
