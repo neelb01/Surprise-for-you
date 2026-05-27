@@ -350,6 +350,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------
+    // 6.5 SWIPE GESTURE SUPPORT FOR SLIDESHOW
+    // -------------------------------------------------------------
+    const slideshowWrapper = document.querySelector('.slideshow-wrapper');
+    if (slideshowWrapper) {
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        slideshowWrapper.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].clientX;
+        }, { passive: true });
+        
+        slideshowWrapper.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].clientX;
+            const diffX = touchEndX - touchStartX;
+            if (Math.abs(diffX) > 60) { // threshold of 60px swipe
+                if (diffX < 0) {
+                    nextSlide(); // Swiped left -> next
+                } else {
+                    prevSlide(); // Swiped right -> prev
+                }
+            }
+        }, { passive: true });
+    }
+
+    // -------------------------------------------------------------
     // 7. PARTICLES AND DECORATION EFFECT
     // -------------------------------------------------------------
     // Dynamically inject randomized ambient particles in the background

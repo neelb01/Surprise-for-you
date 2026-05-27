@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday! 🎂</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Outfit:wght@300;400;600;800&family=Pacifico&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Creepster&family=Outfit:wght@300;400;600;800&family=Pacifico&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script>
-        (function() {
+        (function () {
             var urlParams = new URLSearchParams(window.location.search);
             var isFromThailand = urlParams.get('from') === 'thailand';
             if (isFromThailand) {
@@ -21,6 +24,7 @@
         })();
     </script>
 </head>
+
 <body>
 
     <!-- Confetti Canvas (for celebration strings/craft) -->
@@ -33,20 +37,20 @@
     <section id="horror-stage" class="stage active-stage">
         <!-- Multiple layered overlays for depth -->
         <div class="vignette-overlay"></div>
-        
+
         <!-- PHASE A: Blow the Candle -->
         <div id="candle-content-wrapper">
             <div id="candle-scene">
                 <!-- Person emoji facing right -->
                 <span class="emoji-char person-emoji">👧</span>
-                
+
                 <!-- Cake with glowing candle -->
                 <div class="cake-container">
                     <span class="emoji-char cake-emoji">🎂</span>
                     <div class="candle-flame" id="candle-flame"></div>
                 </div>
             </div>
-            
+
             <div id="candle-prompt" class="sweet-prompt">
                 <span>Tap me to blow the candle 🕯️</span>
             </div>
@@ -54,14 +58,17 @@
 
         <!-- PHASE B: Birthday Wish (User Photo) -->
         <div id="wish-content-wrapper" class="js-hidden">
-            <h1 id="wish-title" class="wish-text">Happy Birthday My Zombie 🎂</h1>
+            <h1 id="wish-title" class="wish-text">
+                Happy Birthday My Zombie 🎂
+                <span class="thai-text">สุขสันต์วันเกิดนะจอมซอมบี้ของเค้า 🎂</span>
+            </h1>
             <div id="zombie-frame">
                 <img id="zombie-img" src="assets/IMG_20260521_150158.jpg" alt="Birthday Girl">
                 <div class="scan-line"></div>
                 <div class="static-noise"></div>
             </div>
-            <div id="click-prompt" class="sweet-prompt-pulse">
-                <span>Tap to continue... ✨</span>
+            <div class="sweet-prompt-pulse" style="cursor: pointer; position: relative; z-index: 50;">
+                <span>Tap to continue 🌸</span>
             </div>
         </div>
 
@@ -85,22 +92,48 @@
 
         <div id="cute-content-wrapper">
             <header id="cute-header">
-                <h1 id="cute-title" class="birthday-title">Happy Birthday, Beautiful! ✨</h1>
-                <p id="cute-subtitle">Every moment with you is special. Here's a little memory lane...</p>
+                <h1 id="cute-title" class="birthday-title">
+                    Happy Birthday, Beautiful! ✨
+                </h1>
+                <p id="cute-subtitle">
+                    Every moment with you is special. Here's a little memory lane...
+                    <span class="thai-text">ทุกช่วงเวลาที่อยู่กับเธอคือสิ่งพิเศษ และนี่คือความทรงจำของเราสองคน...</span>
+                </p>
             </header>
 
             <div id="photo-gallery">
                 <div class="polaroid-card card-left">
                     <div class="polaroid-img-wrapper">
-                        <img class="polaroid-img" src="assets/cute_girl_1.png" alt="Cute Moment 1">
+                        <img class="polaroid-img" src="assets/1779778461951.jpg" alt="Cute Moment 1">
+                        <div class="portal-overlay" id="portal-1">
+                            <div class="portal-vortex"></div>
+                            <div class="portal-text">Tap to Reveal 🌀</div>
+                        </div>
                     </div>
-                    <div class="polaroid-caption">Your Radiance 🌟</div>
+                    <div class="polaroid-caption">
+                        Your Radiance 🌟
+                    </div>
                 </div>
                 <div class="polaroid-card card-right">
                     <div class="polaroid-img-wrapper">
-                        <img class="polaroid-img" src="assets/cute_girl_2.png" alt="Cute Moment 2">
+                        <img class="polaroid-img" src="assets/1779778231330.jpg" alt="Cute Moment 2">
+                        <div class="portal-overlay" id="portal-2">
+                            <div class="portal-vortex"></div>
+                            <div class="portal-text">Tap to Reveal 🌀</div>
+                        </div>
                     </div>
-                    <div class="polaroid-caption">Sweetest Smile 🍰</div>
+                    <div class="polaroid-caption">
+                        Sweetest Smile 🍰
+                    </div>
+                </div>
+            </div>
+
+            <div id="gallery-message" class="gallery-msg-hidden">
+                <div class="gallery-msg-text">
+                    You didn't gave me yours pics. So I have to use only this images, you didn't trusted me <span
+                        id="crying-emoji">😭</span>
+                    <span class="thai-text">เธอไม่ส่งรูปของเธอให้เค้าเลย เค้าก็เลยต้องใช้แค่รูปพวกนี้เองอ่ะ
+                        เธอไม่ไว้ใจเค้าเลยนะ 😭</span>
                 </div>
             </div>
 
@@ -109,30 +142,90 @@
                 <div class="arrow-bounce">↓</div>
             </div>
 
-            <!-- ═══════════════════════════════════════════════════
-                 CLUB 18 SECTION
-                 ═══════════════════════════════════════════════════ -->
+            <!-- ════════════════════════════════════════════ -->
             <div id="club18-section">
-                <h2 class="club18-headline">Welcome to club 18, my cute little zombie! 🧟‍♀️✨</h2>
-                <div class="club18-stage">
-                    <!-- Teen Girl (always visible at start) -->
-                    <div id="club18-teen" class="club18-char club18-center">
-                        <img src="assets/club18_teen.png" alt="17 year old">
-                        <div id="club18-teen-msg" class="club18-msg-popup">This was you: nice, sweet and mean girl</div>
-                        <div class="click-me-tag">Tap me! 👆</div>
-                    </div>
-                    
-                    <!-- Adult Girl (hidden initially) -->
-                    <div id="club18-adult" class="club18-char club18-hidden">
-                        <img src="assets/club18_adult.png" alt="18 year old">
-                        <div id="club18-adult-msg" class="club18-msg-popup">This is you now: adult 18 year old, but you don't belong here...</div>
-                        <div id="club18-adult-tag" class="click-me-tag" style="display:none;">Click her! 👆</div>
-                    </div>
+                <h2 class="club18-headline">
+                    Welcome to Club 18, my cute little zombie! 🧟‍♀️✨
+                    <span class="thai-text">ยินดีต้อนรับสู่คลับ 18 นะจอมซอมบี้สุดน่ารักของเค้า! 🧟‍♀️✨</span>
+                </h2>
+                <div class="club18-wrapper">
+                    <!-- Bouncer Busted Game Container -->
+                    <div class="bouncer-game-container">
 
-                    <!-- Jail Girl (hidden initially) -->
-                    <div id="club18-jail" class="club18-char club18-hidden">
-                        <img src="assets/club18_jail.png" alt="Jail Girl">
-                        <div id="club18-jail-msg" class="club18-msg-popup">This is your right place 😝</div>
+                        <!-- Bouncer/Boy Left Side -->
+                        <div class="bouncer-guy-wrapper">
+                            <div class="bouncer-character">
+                                <img src="assets/boy_char.png" alt="Bouncer Boy" class="bouncer-img">
+                                <div class="bouncer-badge">POLICE / BOUNCER 👮‍♂️</div>
+                            </div>
+                            <div id="bouncer-speech" class="bouncer-bubble">
+                                Stop! Underage zombies are strictly prohibited. Show me your ID! 💳
+                                <span class="thai-bubble-text">หยุดก่อน! ซอมบี้ที่อายุไม่ถึง 18 ห้ามเข้าโดยเด็ดขาด
+                                    ขอดูบัตรประชาชนหน่อย! 💳</span>
+                            </div>
+                        </div>
+
+                        <!-- ID Card / Scanner Right Side -->
+                        <div class="bouncer-action-panel">
+
+                            <!-- Cute ID Card -->
+                            <div id="zombie-id-card" class="zombie-id-card">
+                                <div class="id-header">CLUB 18 ACCESS CARD</div>
+                                <div class="id-body">
+                                    <div class="id-photo-frame">
+                                        <img id="id-photo" src="assets/club18_teen.png" alt="ID Photo">
+                                        <div id="fake-stamp" class="fake-stamp js-hidden">18 Today!</div>
+                                    </div>
+                                    <div class="id-details">
+                                        <p><strong>NAME:</strong> Cute Zombie</p>
+                                        <p><strong>BIRTHDATE:</strong> 27 May, 2008</p>
+                                        <p><strong>AGE:</strong> <span id="id-age-val" class="age-text">17</span></p>
+                                    </div>
+                                </div>
+                                <div class="id-barcode">|||||||||||||||||||</div>
+                            </div>
+
+                            <!-- Biometric Fingerprint Scanner (Hidden initially) -->
+                            <div id="biometric-scanner-panel" class="scanner-panel js-hidden">
+                                <div class="scanner-screen">
+                                    <div id="scanner-laser" class="scanner-laser"></div>
+                                    <div id="scanner-status" class="scanner-status">PLACE FINGER TO SCAN</div>
+                                    <div class="scanner-progress-bar">
+                                        <div id="scanner-progress-fill" class="scanner-progress-fill"></div>
+                                    </div>
+                                </div>
+                                <button id="fingerprint-btn" class="fingerprint-btn">
+                                    <span class="fingerprint-icon">👆</span>
+                                    <span
+                                        style="font-size:0.65rem; font-weight:bold; font-family:var(--sans);">HOLD</span>
+                                </button>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="bouncer-controls">
+                                <button id="show-id-btn" class="bouncer-btn">Present ID 💳</button>
+                                <button id="forge-id-btn" class="bouncer-btn js-hidden">It's My Birthday! 🎂</button>
+                                <button id="submit-fake-id-btn" class="bouncer-btn js-hidden">Submit ID 💳</button>
+                            </div>
+                        </div>
+
+                        <!-- Jail Overlay (slams down in phase 5) -->
+                        <div id="jail-bars-overlay" class="jail-bars-hidden">
+                            <div class="jail-bar"></div>
+                            <div class="jail-bar"></div>
+                            <div class="jail-bar"></div>
+                            <div class="jail-bar"></div>
+                            <div class="jail-bar"></div>
+                            <div class="jail-bar"></div>
+
+                            <div class="jail-girl-container">
+                                <img src="assets/club18_jail.png" alt="Jailed" class="jail-girl-img">
+                                <div class="jail-msg">
+                                    Jailed for stealing my heart! 👮‍♂️😝❤️
+                                    <span class="thai-bubble-text">โดนจำคุก... ข้อหาขโมยหัวใจของเค้าไป! 👮‍♂️😝❤️</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,7 +240,10 @@
                  CHOCOLATE / MONEY SENDING SECTION
                  ═══════════════════════════════════════════════════ -->
             <div id="money-section">
-                <h2 class="money-headline">Even if you don't buy me chocolate... 🍫</h2>
+                <h2 class="money-headline">
+                    Even if you don't buy me chocolate... 🍫
+                    <span class="thai-text">ถึงเธอจะไม่ซื้อช็อคโกแลตให้เค้าก็เถอะ... 🍫</span>
+                </h2>
 
                 <div id="money-stage">
                     <!-- Boy character (starts centered) -->
@@ -166,7 +262,12 @@
                 </div>
 
                 <div id="money-message" class="money-msg-hidden">
-                    <p>Even you're not buying me chocolates, here's some money to buy that special thai food as promised 😜💕</p>
+                    <p>
+                        Even you're not buying me chocolates, here's some money to buy that special thai food as
+                        promised 😜💕
+                        <span class="thai-text">ถึงเธอจะไม่ซื้อช็อคโกแลตให้เค้าก็ไม่เป็นไร
+                            นี่เงินเอาไว้ไปซื้ออาหารไทยมื้อพิเศษตามที่สัญญาไว้นะ 😜💕</span>
+                    </p>
                 </div>
             </div>
 
@@ -180,23 +281,38 @@
                  FAVORITE DISH SECTION
                  ═══════════════════════════════════════════════════ -->
             <div id="dish-section">
-                <h2 class="dish-headline">Pick your favorite dish! 😋</h2>
+                <h2 class="dish-headline">
+                    Pick your favorite dish! 😋
+                    <span class="thai-text">เลือกเมนูโปรดของเธอสิ! 😋</span>
+                </h2>
                 <div class="dish-grid">
                     <div class="dish-card" data-dish="normal">
                         <img src="assets/dish_grilled_pork.png" alt="Grilled Pork">
-                        <div class="dish-name">Grilled Pork</div>
+                        <div class="dish-name">
+                            Grilled Pork
+                            <span class="thai-text-small">หมูย่าง</span>
+                        </div>
                     </div>
                     <div class="dish-card" data-dish="normal">
                         <img src="assets/dish_basil_egg.png" alt="Stir-fried Basil with Egg">
-                        <div class="dish-name">Basil & Egg</div>
+                        <div class="dish-name">
+                            Basil & Egg
+                            <span class="thai-text-small">กะเพราไข่ดาว</span>
+                        </div>
                     </div>
                     <div class="dish-card" data-dish="normal">
                         <img src="assets/dish_mango_sticky_rice.png" alt="Mango Sticky Rice">
-                        <div class="dish-name">Mango Sticky Rice</div>
+                        <div class="dish-name">
+                            Mango Sticky Rice
+                            <span class="thai-text-small">ข้าวเหนียวมะม่วง</span>
+                        </div>
                     </div>
                     <div class="dish-card" data-dish="secret">
                         <img src="assets/dish_secret.png" alt="Secret Dish">
-                        <div class="dish-name">Secret Dish</div>
+                        <div class="dish-name">
+                            Secret Dish
+                            <span class="thai-text-small">เมนูลับ</span>
+                        </div>
                     </div>
                 </div>
 
@@ -206,6 +322,100 @@
                         <p id="dish-popup-text"></p>
                         <button id="dish-popup-btn">Try again</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Scroll indicator to tease section -->
+            <div id="scroll-indicator-tease" class="scroll-ind-hidden">
+                <span>Keep scrolling, let's settle this debate... ⚡</span>
+                <div class="arrow-bounce">↓</div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════
+                 TEASE SECTION: I'M NOT OLD & YOU'RE SO MEAN
+                 ═══════════════════════════════════════════════════ -->
+            <div id="tease-section" class="tease-section-hidden" style="display: none;">
+                <h2 class="tease-headline">
+                    I'm Not Old! & You're So Mean! 👴⚡😈
+                    <span class="thai-text">เค้าไม่ได้แก่นะ! & เธอนั่นแหละใจร้ายชะมัด! 👴⚡😈</span>
+                </h2>
+
+
+                <div class="tease-game-container">
+                    <!-- Left: Boy (Old Man) Column -->
+                    <div id="tease-boy-wrapper" class="tease-char-wrapper">
+                        <div class="tease-character">
+                            <img src="assets/tease_boy.png" alt="Boy Char" class="tease-char-img">
+                            <!-- Absolute emoji overlays for teasing states -->
+                            <div class="tease-overlay overlay-glasses js-hidden">👓</div>
+                            <div class="tease-overlay overlay-cane js-hidden">🦯</div>
+                            <div class="tease-overlay overlay-beard js-hidden">🧔</div>
+                        </div>
+                        <div class="tease-meter-container">
+                            <div class="tease-meter-label">
+                                Grumpy Old Man Meter: <span id="boy-age-text">20</span>
+                                <span class="thai-text-small">เกจวัดตาแก่ขี้บ่น</span>
+                            </div>
+                            <div class="tease-progress-bar">
+                                <div id="grumpy-progress-fill" class="tease-progress-fill"></div>
+                            </div>
+                        </div>
+                        <div id="tease-boy-speech" class="tease-bubble js-hidden"></div>
+                    </div>
+
+                    <!-- Middle: Action Deck -->
+                    <div id="tease-deck">
+                        <div class="tease-deck-title">Choose your phrase:</div>
+                        <div class="tease-buttons-grid">
+                            <!-- She Teases buttons -->
+                            <button id="tease-btn-she-1" class="tease-btn tease-btn-girl">Hey Old Man! 👴👓</button>
+                            <button id="tease-btn-she-2" class="tease-btn tease-btn-girl js-hidden">Grandpa nap time!
+                                ⏰🛏️</button>
+                            <button id="tease-btn-she-3" class="tease-btn tease-btn-girl js-hidden">Is that a gray hair?
+                                👵</button>
+
+                            <!-- He Reacts buttons (locked initially) -->
+                            <button id="tease-btn-he-1" class="tease-btn tease-btn-boy js-hidden">You're so mean!
+                                😭</button>
+                            <button id="tease-btn-he-2" class="tease-btn tease-btn-boy js-hidden">No chocolates for you!
+                                🍫❌</button>
+                            <button id="tease-btn-he-3" class="tease-btn tease-btn-boy js-hidden">Meanest girl ever!
+                                💔</button>
+                        </div>
+                        <button id="truce-btn" class="tease-truce-btn js-hidden">Declare Truce 🕊️❤️</button>
+                    </div>
+
+                    <!-- Right: Girl (Mean Girl) Column -->
+                    <div id="tease-girl-wrapper" class="tease-char-wrapper">
+                        <div class="tease-character">
+                            <img src="assets/tease_girl.png" alt="Girl Char" class="tease-char-img">
+                            <!-- Absolute emoji overlays for teasing states -->
+                            <div class="tease-overlay overlay-horns js-hidden">😈</div>
+                            <div class="tease-overlay overlay-pitchfork js-hidden">🔱</div>
+                            <div class="tease-overlay overlay-crown js-hidden">👑</div>
+                        </div>
+                        <div class="tease-meter-container">
+                            <div class="tease-meter-label">
+                                Mean-o-meter: <span id="girl-mean-text">Cute <span
+                                        class="thai-status">น่ารัก</span></span>
+                                <span class="thai-text-small">เกจวัดคนใจร้าย</span>
+                            </div>
+                            <div class="tease-progress-bar">
+                                <div id="mean-progress-fill" class="tease-progress-fill"></div>
+                            </div>
+                        </div>
+                        <div id="tease-girl-speech" class="tease-bubble js-hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Truce Message Card (Fades in on truce) -->
+                <div id="truce-message-card" class="truce-card-hidden">
+                    <p class="truce-text">
+                        Okay fine, I might call you "mean" and you might call me "old man", but I wouldn't have it any
+                        other way! Happy Birthday to the meanest zombie ever! 👴👵
+                        <span class="thai-text">โอเคก็ได้ ถึงเค้าจะเรียกเธอว่า "คนใจร้าย" และเธอจะเรียกเค้าว่า "ตาแก่"
+                            แต่เค้าก็ชอบที่เราเป็นแบบนี้นะ! สุขสันต์วันเกิดนะยัยซอมบี้ที่ใจร้ายที่สุดในโลก! 👴👵</span>
+                    </p>
                 </div>
             </div>
 
@@ -219,7 +429,10 @@
                  I HATE YOU 3000 SECTION
                  ═══════════════════════════════════════════════════ -->
             <div id="hate-section" class="hate-section-hidden" style="display: none;">
-                <h2 class="hate-headline">I Hate You 3000 💔</h2>
+                <h2 class="hate-headline">
+                    I Hate You 3000 💔
+                    <span class="thai-text">เค้าเกลียดเธอ 3000 เลย 💔</span>
+                </h2>
 
                 <div id="hate-stage">
                     <!-- Twinkling Stars -->
@@ -233,43 +446,30 @@
                         <!-- Boy character holding phone (left) -->
                         <div id="hate-boy-char" class="hate-char-wrapper hate-boy-left">
                             <img src="assets/boy_phone.png" alt="Boy" class="hate-char-img">
-                            <div id="hate-boy-msg" class="hate-msg-popup js-hidden"></div>
-                            <div id="hate-boy-tag" class="click-me-tag">Tap me! 👆</div>
+                            <div id="hate-boy-msg" class="hate-msg-popup"></div>
                         </div>
 
                         <!-- Girl character holding phone (right) -->
                         <div id="hate-girl-char" class="hate-char-wrapper hate-girl-right">
                             <img src="assets/girl_phone.png" alt="Girl" class="hate-char-img">
-                            <div id="hate-girl-msg" class="hate-msg-popup js-hidden"></div>
-                            <div id="hate-girl-tag" class="click-me-tag js-hidden">Tap me! 👆</div>
+                            <div id="hate-girl-msg" class="hate-msg-popup"></div>
                         </div>
 
-                        <!-- Swiping Machine (hidden initially) -->
-                        <div id="swiper-machine" class="js-hidden">
-                            <img src="assets/swiper_machine.png" alt="Swiper Machine" class="swiper-img">
+                        <!-- Dialogue Card Deck -->
+                        <div id="dialogue-deck-container">
+                            <div id="deck-hint" class="deck-hint js-hidden">
+                                Drag the card to the correct person!
+                                <span class="thai-text-small"
+                                    style="color: rgba(255,255,255,0.85); display: block; margin-top: 3px;">ลากการ์ดข้อความไปให้ถูกคนนะ!</span>
+                            </div>
+                            <div id="active-dialogue-card" class="dialogue-card js-hidden">
+                                <span class="card-text"></span>
+                            </div>
                         </div>
 
-                        <!-- Draggable Card (hidden initially) -->
-                        <div id="swipe-card" class="js-hidden" draggable="true">
-                            <div class="swipe-hint">swipe me.!</div>
-                            <img src="assets/swipe_card.png" alt="Card" class="card-img">
-                        </div>
-
-                        <!-- Flying Airplane (hidden initially) -->
-                        <div id="flying-plane" class="js-hidden">
-                            <img src="assets/small_plane.png" alt="Airplane" class="plane-img">
-                        </div>
-
-                        <!-- Dropped Parcel (hidden initially) -->
-                        <div id="dropped-parcel" class="js-hidden">
-                            <div id="parcel-tag" class="click-me-tag">tap me to open.</div>
-                            <img src="assets/small_parcel.png" alt="Parcel" class="parcel-img">
-                        </div>
-
-                        <!-- Revealed Ticket (hidden initially) -->
-                        <div id="revealed-ticket" class="js-hidden">
-                            <img src="assets/trip_ticket.png" alt="Ticket" class="ticket-img">
-                            <div class="ticket-revealed-text">continue moving below</div>
+                        <!-- Giant Heart Finale (hidden initially) -->
+                        <div id="finale-heart" class="js-hidden">
+                            ❤️
                         </div>
                     </div>
                 </div>
@@ -285,8 +485,11 @@
                  TO DO LIST (THAILAND TRAVEL) SECTION
                  ═══════════════════════════════════════════════════ -->
             <div id="last-section">
-                <h2 class="last-headline">To Do List 📝✨</h2>
-                
+                <h2 class="last-headline">
+                    To Do List 📝✨
+                    <span class="thai-text">รายการสิ่งที่ต้องทำ 📝✨</span>
+                </h2>
+
                 <div id="last-stage">
                     <!-- Friends facing back (visible initially) -->
                     <div id="travel-friends" class="travel-friends-wrapper">
@@ -306,7 +509,10 @@
                  MYSTERY GIFT SECTION
                  ═══════════════════════════════════════════════════ -->
             <div id="mystery-section">
-                <h2 id="mystery-title">Open Your Mystery Gift 🎁</h2>
+                <h2 id="mystery-title">
+                    Open Your Mystery Gift 🎁
+                    <span class="thai-text">เปิดของขวัญปริศนาของเธอสิ 🎁</span>
+                </h2>
                 <div id="gift-box-container">
                     <div id="gift-box">
                         <div class="gift-lid">
@@ -337,6 +543,23 @@
     <!-- Fullscreen portal transition overlay -->
     <div id="portal-transition-overlay" class="portal-transition-overlay"></div>
 
+    <!-- Inline SVG filters for magical turbulence displacement reveal -->
+    <svg style="position: absolute; width: 0; height: 0;" width="0" height="0">
+        <defs>
+            <filter id="magic-filter-1">
+                <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" />
+                <feDisplacementMap id="displacement-1" in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R"
+                    yChannelSelector="G" />
+            </filter>
+            <filter id="magic-filter-2">
+                <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" />
+                <feDisplacementMap id="displacement-2" in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R"
+                    yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+
     <script src="script.js"></script>
 </body>
+
 </html>

@@ -14,16 +14,25 @@
  */
 
 const BIRTHDAY_MESSAGE = `Happy Birthday! 💖
+สุขสันต์วันเกิดนะ! 💖
 
 I wanted to surprise you with something a bit different this year... hope the zombie didn't scare you too much! 😜
+ปีนี้เค้าอยากจะเซอร์ไพรส์เธอในแบบที่ต่างออกไปหน่อย... หวังว่าซอมบี้จะไม่ทำให้เธอตกใจกลัวจนเกินไปนะ! 😜
 
 You bring so much light, warmth, and laughter into my life. Every single day with you is a gift, and today we celebrate YOU.
+เธอพาแสงสว่าง ความอบอุ่น และเสียงหัวเราะเข้ามาในชีวิตเค้า ทุกๆ วันที่มีเธออยู่คือของขวัญที่พิเศษที่สุด และวันนี้คือวันเฉลิมฉลองของเธอ
+
+Now, even not talking to you for one day feels like 1 week... 🥺⏳
+ตอนนี้แค่ไม่ได้คุยกับเธอแค่วันเดียว ก็รู้สึกยาวนานเหมือนเป็นอาทิตย์เลยนะ... 🥺⏳
 
 May this year bring you endless happiness, beautiful adventures, and the realization of all your dreams. You deserve the absolute best.
+ขอให้ปีนี้ของเธอเต็มไปด้วยความสุขที่ไม่มีวันสิ้นสุด การผจญภัยที่งดงาม และขอให้ความฝันของเธอเป็นจริงในทุกๆ เรื่อง เธอคู่ควรกับสิ่งที่ดีที่สุดในโลก
 
 Keep shining bright, beautiful! ✨
+เปล่งประกายสดใสต่อไปนะคนสวย! ✨
 
-With love, always. 💕`;
+With love, always. 💕
+รักเสมอและตลอดไป 💕`;
 
 
 /* =====================================================================
@@ -210,7 +219,7 @@ function preloadAudioAssets() {
         return;
     }
 
-    // Preload scream.mp3
+    // Preload assets/scream.mp3
     fetch('assets/scream.mp3')
         .then(res => res.arrayBuffer())
         .then(buf => globalAudioCtx.decodeAudioData(buf))
@@ -219,10 +228,10 @@ function preloadAudioAssets() {
             console.log('😱 Jumpscare scream sound preloaded and decoded!');
         })
         .catch(err => {
-            console.warn('Failed to load/decode scream.mp3:', err);
+            console.warn('Failed to load/decode assets/scream.mp3:', err);
         });
 
-    // Preload happy_birthday_music_box.mp3
+    // Preload assets/happy_birthday_music_box.mp3
     fetch('assets/happy_birthday_music_box.mp3')
         .then(res => res.arrayBuffer())
         .then(buf => globalAudioCtx.decodeAudioData(buf))
@@ -231,7 +240,7 @@ function preloadAudioAssets() {
             console.log('🎵 Happy Birthday music box preloaded and decoded!');
         })
         .catch(err => {
-            console.warn('Failed to load/decode happy_birthday_music_box.mp3:', err);
+            console.warn('Failed to load/decode assets/happy_birthday_music_box.mp3:', err);
         });
 }
 
@@ -1054,11 +1063,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const typingCursor = document.getElementById('typing-cursor');
     const horrorCanvas = document.getElementById('horror-canvas');
 
-    const club18Teen = document.getElementById('club18-teen');
-    const club18Adult = document.getElementById('club18-adult');
-    const club18Jail = document.getElementById('club18-jail');
-    const club18AdultTag = document.getElementById('club18-adult-tag');
-    const club18JailMsg = document.getElementById('club18-jail-msg');
     const scrollIndMoney = document.getElementById('scroll-indicator-money');
 
     let scareTriggered = false;
@@ -1329,82 +1333,650 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* -----------------------------------------------------------
-       CLUB 18 INTERACTION
+       POLAROID MYSTERIOUS PORTAL REVEAL
        ----------------------------------------------------------- */
-    let club18State = 0; // 0: teen, 1: adult, 2: jail
+    let portal1Opened = false;
+    let portal2Opened = false;
 
-    club18Teen.addEventListener('click', () => {
-        if (club18State !== 0) return;
-        club18State = 1;
-        cuteSynth.playPop();
-
-        // Hide "Tap me" on teen
-        club18Teen.querySelector('.click-me-tag').style.display = 'none';
-
-        // Hide teen message popup
-        const teenMsg = document.getElementById('club18-teen-msg');
-        if (teenMsg) teenMsg.classList.remove('club18-msg-visible');
-
-        // Slide teen left
-        club18Teen.style.transform = 'translateX(-120px)';
-        club18Teen.classList.remove('club18-center');
-
-        // Show adult
-        setTimeout(() => {
-            club18Adult.classList.remove('club18-hidden');
-            club18Adult.style.transform = 'translateX(60px)';
+    function playCardPortalSound() {
+        try {
+            initGlobalAudioContext();
+            if (!globalAudioCtx) return;
+            const ctx = globalAudioCtx;
+            const now = ctx.currentTime;
             
-            // Show adult message popup
-            setTimeout(() => {
-                const adultMsg = document.getElementById('club18-adult-msg');
-                if (adultMsg) {
-                    adultMsg.classList.add('club18-msg-visible');
-                    cuteSynth.playPop();
-                }
-            }, 400);
+            // 1. Rising whistle sweep
+            const osc1 = ctx.createOscillator();
+            const gain1 = ctx.createGain();
+            osc1.type = 'triangle';
+            osc1.frequency.setValueAtTime(300, now);
+            osc1.frequency.exponentialRampToValueAtTime(1200, now + 0.45);
+            
+            gain1.gain.setValueAtTime(0, now);
+            gain1.gain.linearRampToValueAtTime(0.08, now + 0.04);
+            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+            
+            osc1.connect(gain1);
+            gain1.connect(ctx.destination);
+            osc1.start(now);
+            osc1.stop(now + 0.45);
+            
+            // 2. Twinkling chime arpeggio (C Major Pentatonic)
+            const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98];
+            notes.forEach((freq, idx) => {
+                const time = now + idx * 0.06;
+                const oscChime = ctx.createOscillator();
+                const gainChime = ctx.createGain();
+                oscChime.type = 'sine';
+                oscChime.frequency.setValueAtTime(freq, time);
+                
+                gainChime.gain.setValueAtTime(0, time);
+                gainChime.gain.linearRampToValueAtTime(0.05, time + 0.005);
+                gainChime.gain.exponentialRampToValueAtTime(0.001, time + 0.35);
+                
+                oscChime.connect(gainChime);
+                gainChime.connect(ctx.destination);
+                oscChime.start(time);
+                oscChime.stop(time + 0.35);
+            });
 
-            // Show click tag for adult
-            setTimeout(() => {
-                club18AdultTag.style.display = 'block';
-            }, 600);
+            // 3. Funny boing/pop sound at the end
+            const boingTime = now + 0.35;
+            const oscBoing = ctx.createOscillator();
+            const gainBoing = ctx.createGain();
+            oscBoing.type = 'sine';
+            oscBoing.frequency.setValueAtTime(150, boingTime);
+            oscBoing.frequency.exponentialRampToValueAtTime(550, boingTime + 0.15);
+            oscBoing.frequency.exponentialRampToValueAtTime(120, boingTime + 0.3);
+            
+            gainBoing.gain.setValueAtTime(0, boingTime);
+            gainBoing.gain.linearRampToValueAtTime(0.12, boingTime + 0.05);
+            gainBoing.gain.exponentialRampToValueAtTime(0.001, boingTime + 0.3);
+            
+            oscBoing.connect(gainBoing);
+            gainBoing.connect(ctx.destination);
+            oscBoing.start(boingTime);
+            oscBoing.stop(boingTime + 0.3);
+        } catch (e) {}
+    }
+
+    function spawnPortalSparkles(el) {
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        
+        // Dynamic emojis flying out of the portal
+        const emojis = ['🌀', '✨', '💖', '🌸', '🦄', '🍿', '🎈', '🍭', '⭐', '🌈'];
+        const count = 30;
+
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            particle.style.position = 'fixed';
+            particle.style.fontSize = `${Math.random() * 1.4 + 1.2}rem`;
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '999';
+            particle.style.left = cx + 'px';
+            particle.style.top = cy + 'px';
+            
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.random() * 150 + 50;
+            const tx = Math.cos(angle) * dist;
+            const ty = Math.sin(angle) * dist;
+            
+            particle.style.setProperty('--tx', `${tx}px`);
+            particle.style.setProperty('--ty', `${ty}px`);
+            
+            particle.style.animation = `emojiPortalFly 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards`;
+            
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 1500);
+        }
+    }
+
+    function animateRevealFilter(displacementId, filterId, duration = 1200) {
+        const disp = document.getElementById(displacementId);
+        const filter = document.getElementById(filterId);
+        const turb = filter ? filter.querySelector('feTurbulence') : null;
+        if (!disp) return;
+        
+        const startTime = performance.now();
+        const startScale = 150;
+        
+        function tick(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            const easeProgress = 1 - Math.pow(1 - progress, 3); // cubic ease-out
+            const currentScale = startScale * (1 - easeProgress);
+            
+            disp.setAttribute('scale', currentScale);
+            
+            if (turb && progress < 1) {
+                const shift = (Math.random() - 0.5) * 0.012;
+                turb.setAttribute('baseFrequency', (0.05 + shift).toFixed(4));
+            }
+            
+            if (progress < 1) {
+                requestAnimationFrame(tick);
+            } else {
+                disp.setAttribute('scale', 0);
+                if (turb) turb.setAttribute('baseFrequency', '0.05');
+            }
+        }
+        requestAnimationFrame(tick);
+    }
+
+    let tearInterval = null;
+    function startCryingTears() {
+        if (tearInterval) return;
+        const emojiEl = document.getElementById('crying-emoji');
+        if (!emojiEl) return;
+        
+        const sobInterval = setInterval(() => {
+            if (!tearInterval) {
+                clearInterval(sobInterval);
+                return;
+            }
+            try {
+                initGlobalAudioContext();
+                if (!globalAudioCtx) return;
+                const ctx = globalAudioCtx;
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(320, now);
+                osc.frequency.linearRampToValueAtTime(150, now + 0.35);
+                gain.gain.setValueAtTime(0.04, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } catch (e) {}
+        }, 1200);
+
+        tearInterval = setInterval(() => {
+            const bodyRect = document.body.getBoundingClientRect();
+            const rect = emojiEl.getBoundingClientRect();
+            const emojiX = rect.left - bodyRect.left + rect.width / 2;
+            const emojiY = rect.top - bodyRect.top + rect.height * 0.65;
+            
+            spawnTear(emojiX - 8, emojiY);
+            spawnTear(emojiX + 8, emojiY);
         }, 300);
+    }
+
+    function spawnTear(startX, startY) {
+        const tear = document.createElement('div');
+        tear.className = 'tear-drop';
+        
+        const jitterX = (Math.random() - 0.5) * 5;
+        tear.style.left = `${startX + jitterX}px`;
+        tear.style.top = `${startY}px`;
+        
+        const fallDist = 120 + Math.random() * 40;
+        tear.style.setProperty('--ty', `${fallDist}px`);
+        
+        document.body.appendChild(tear);
+        setTimeout(() => tear.remove(), 1200);
+    }
+
+    function checkBothPortalsOpened() {
+        if (portal1Opened && portal2Opened) {
+            const galleryMsg = document.getElementById('gallery-message');
+            if (galleryMsg) {
+                galleryMsg.classList.remove('gallery-msg-hidden');
+                galleryMsg.classList.add('gallery-msg-visible');
+                
+                setTimeout(() => {
+                    startCryingTears();
+                }, 1000);
+            }
+        }
+    }
+
+    const portal1 = document.getElementById('portal-1');
+    const portal2 = document.getElementById('portal-2');
+
+    if (portal1) {
+        portal1.addEventListener('click', () => {
+            if (portal1Opened) return;
+            portal1Opened = true;
+            
+            const parentCard = portal1.closest('.polaroid-card');
+            if (parentCard) {
+                const wrapper = parentCard.querySelector('.polaroid-img-wrapper');
+                if (wrapper) {
+                    wrapper.classList.add('img-shake');
+                    setTimeout(() => wrapper.classList.remove('img-shake'), 800);
+                }
+            }
+            
+            portal1.classList.add('portal-dissolve');
+            
+            const img = portal1.previousElementSibling;
+            if (img) {
+                img.classList.add('displace-active-1');
+                animateRevealFilter('displacement-1', 'magic-filter-1');
+            }
+            
+            playCardPortalSound();
+            spawnPortalSparkles(portal1);
+            checkBothPortalsOpened();
+        });
+    }
+
+    if (portal2) {
+        portal2.addEventListener('click', () => {
+            if (portal2Opened) return;
+            portal2Opened = true;
+            
+            const parentCard = portal2.closest('.polaroid-card');
+            if (parentCard) {
+                const wrapper = parentCard.querySelector('.polaroid-img-wrapper');
+                if (wrapper) {
+                    wrapper.classList.add('img-shake');
+                    setTimeout(() => wrapper.classList.remove('img-shake'), 800);
+                }
+            }
+            
+            portal2.classList.add('portal-dissolve');
+            
+            const img = portal2.previousElementSibling;
+            if (img) {
+                img.classList.add('displace-active-2');
+                animateRevealFilter('displacement-2', 'magic-filter-2');
+            }
+            
+            playCardPortalSound();
+            spawnPortalSparkles(portal2);
+            checkBothPortalsOpened();
+        });
+    }
+
+    /* -----------------------------------------------------------
+       CLUB 18 INTERACTION (BOUNCER ID CHECK GAME)
+       ----------------------------------------------------------- */
+    const showIdBtn = document.getElementById('show-id-btn');
+    const forgeIdBtn = document.getElementById('forge-id-btn');
+    const submitFakeIdBtn = document.getElementById('submit-fake-id-btn');
+    const bouncerSpeech = document.getElementById('bouncer-speech');
+    const zombieIdCard = document.getElementById('zombie-id-card');
+    const idAgeVal = document.getElementById('id-age-val');
+    const idPhoto = document.getElementById('id-photo');
+    const fakeStamp = document.getElementById('fake-stamp');
+    const scannerPanel = document.getElementById('biometric-scanner-panel');
+    const scannerLaser = document.getElementById('scanner-laser');
+    const scannerStatus = document.getElementById('scanner-status');
+    const scannerProgressFill = document.getElementById('scanner-progress-fill');
+    const fingerprintBtn = document.getElementById('fingerprint-btn');
+    const jailBarsOverlay = document.getElementById('jail-bars-overlay');
+
+    let club18State = 0; // 0: init, 1: id shown (underage), 2: forged, 3: scanning, 4: complete/jail
+    let isScanning = false;
+    let scanProgress = 0;
+    let scanInterval = null;
+
+    // Synth sounds for scanner/police
+    function playScanSound(progress) {
+        try {
+            initGlobalAudioContext();
+            if (!globalAudioCtx) return;
+            const now = globalAudioCtx.currentTime;
+            const osc = globalAudioCtx.createOscillator();
+            const gain = globalAudioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400 + progress * 6, now);
+            gain.gain.setValueAtTime(0.02, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+            osc.connect(gain);
+            gain.connect(globalAudioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.08);
+        } catch (e) {}
+    }
+
+    function playSirenSound() {
+        try {
+            initGlobalAudioContext();
+            if (!globalAudioCtx) return;
+            const now = globalAudioCtx.currentTime;
+            for (let i = 0; i < 6; i++) {
+                const time = now + i * 0.3;
+                const osc = globalAudioCtx.createOscillator();
+                const gain = globalAudioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(i % 2 === 0 ? 650 : 800, time);
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(0.04, time + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.28);
+                osc.connect(gain);
+                gain.connect(globalAudioCtx.destination);
+                osc.start(time);
+                osc.stop(time + 0.28);
+            }
+        } catch (e) {}
+    }
+
+    function playClangSound() {
+        try {
+            initGlobalAudioContext();
+            if (!globalAudioCtx) return;
+            const now = globalAudioCtx.currentTime;
+            const osc1 = globalAudioCtx.createOscillator();
+            const osc2 = globalAudioCtx.createOscillator();
+            const gain = globalAudioCtx.createGain();
+            
+            osc1.type = 'square';
+            osc1.frequency.setValueAtTime(90, now);
+            osc1.frequency.exponentialRampToValueAtTime(30, now + 0.6);
+            
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(350, now);
+            osc2.frequency.exponentialRampToValueAtTime(150, now + 0.4);
+            
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+            
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(globalAudioCtx.destination);
+            
+            osc1.start(now);
+            osc2.start(now);
+            osc1.stop(now + 0.6);
+            osc2.stop(now + 0.6);
+        } catch (e) {}
+    }
+
+    let bouncerTypewriterTimeout = null;
+    let bouncerSpeechText = "";
+    let isTyping = false;
+    let currentOnDone = null;
+    let canTapToAdvance = false;
+    let dialogueStep = 0;
+
+    function bouncerTypewrite(text, onDone = null) {
+        if (bouncerTypewriterTimeout) {
+            clearTimeout(bouncerTypewriterTimeout);
+        }
+        isTyping = true;
+        bouncerSpeechText = text;
+        bouncerSpeech.innerHTML = "";
+        currentOnDone = onDone;
+
+        const parts = text.split('|');
+        const engText = parts[0].trim();
+        const thaiText = parts[1] ? parts[1].trim() : "";
+
+        let i = 0;
+        const tick = () => {
+            if (i < engText.length) {
+                bouncerSpeech.innerHTML += engText[i] === '\n' ? '<br>' : engText[i];
+                if (engText[i] !== ' ' && engText[i] !== '\n') {
+                    cuteSynth.playTick();
+                }
+                i++;
+                bouncerTypewriterTimeout = setTimeout(tick, 30);
+            } else {
+                isTyping = false;
+                if (thaiText) {
+                    bouncerSpeech.innerHTML += `<br><span class="thai-bubble-text">${thaiText}</span>`;
+                }
+                if (onDone) onDone();
+            }
+        };
+        tick();
+    }
+
+    bouncerSpeech.addEventListener('click', () => {
+        if (isTyping) {
+            // Speed up and finish typing immediately
+            if (bouncerTypewriterTimeout) {
+                clearTimeout(bouncerTypewriterTimeout);
+            }
+            isTyping = false;
+            const parts = bouncerSpeechText.split('|');
+            const engText = parts[0].trim();
+            const thaiText = parts[1] ? parts[1].trim() : "";
+            bouncerSpeech.innerHTML = engText;
+            if (thaiText) {
+                bouncerSpeech.innerHTML += `<br><span class="thai-bubble-text">${thaiText}</span>`;
+            }
+            if (currentOnDone) {
+                const callback = currentOnDone;
+                currentOnDone = null;
+                callback();
+            }
+            return;
+        }
+        
+        if (canTapToAdvance) {
+            canTapToAdvance = false;
+            advanceDialogue();
+        }
     });
 
-    club18Adult.addEventListener('click', () => {
-        if (club18State !== 1) return;
-        club18State = 2;
+    function showTapIndicator() {
+        const hint = document.createElement('span');
+        hint.className = 'bouncer-bubble-tap-hint';
+        hint.innerHTML = 'Tap bubble to continue... ➔';
+        bouncerSpeech.appendChild(hint);
+        canTapToAdvance = true;
+    }
+
+    function advanceDialogue() {
+        cuteSynth.playPop();
+        
+        if (dialogueStep === 1) {
+            dialogueStep = 2;
+            bouncerTypewrite("Hold on... 17? Underage minor! ❌ Access Denied! | เดี๋ยวก่อน... อายุ 17 เองเหรอ? ยังไม่บรรลุนิติภาวะนี่นา! ❌ ปฏิเสธการเข้า!", () => {
+                showTapIndicator();
+            });
+        } else if (dialogueStep === 2) {
+            dialogueStep = 3;
+            bouncerTypewrite("Wait... your birthday is 27 May? Today is 27 May! That means you turn 18 today! 🎂✨ | เดี๋ยวนะ... วันเกิดเธอคือวันที่ 27 พฤษภาคมเหรอ? วันนี้ก็วันที่ 27 พฤษภาคมนี่! แสดงว่าเธออายุครบ 18 วันนี้น่ะสิ! 🎂✨", () => {
+                forgeIdBtn.classList.remove('js-hidden');
+            });
+        } else if (dialogueStep === 4) {
+            dialogueStep = 5;
+            bouncerTypewrite("Wait, let me see... 18 Today! Is it really you? 🧐 | ขอดูหน่อยสิ... อายุ 18 วันนี้! ใช่เธอจริงเหรอเนี่ย? 🧐", () => {
+                showTapIndicator();
+            });
+        } else if (dialogueStep === 5) {
+            dialogueStep = 6;
+            bouncerTypewrite("I must verify your biometric signature. Scan your fingerprint! 🕵️‍♂️ | เค้าต้องตรวจสอบลายนิ้วมือเพื่อยืนยันตัวตนนะ สแกนลายนิ้วมือสิ! 🕵️‍♂️", () => {
+                submitFakeIdBtn.classList.remove('js-hidden');
+            });
+        } else if (dialogueStep === 7) {
+            dialogueStep = 8;
+            bouncerTypewrite("Wow! The scan is 100% correct! You are officially 18! Happy Birthday! Welcome to Club 18! 🥳🎉 | ว้าว! ผลสแกนถูกต้อง 100% เลย! ตอนนี้เธออายุ 18 อย่างเป็นทางการแล้วนะ! สุขสันต์วันเกิด! ยินดีต้อนรับสู่คลับ 18 จ้า! 🥳🎉", () => {
+                showTapIndicator();
+            });
+        } else if (dialogueStep === 8) {
+            dialogueStep = 9;
+            bouncerTypewrite("But wait! You think you can just walk in? You belong in jail... 👮‍♂️ | แต่เดี๋ยวก่อน! คิดว่าจะเดินเข้าไปง่ายๆ เหรอ? เธอต้องติดคุกต่างหากล่ะ... 👮‍♂️", () => {
+                showTapIndicator();
+            });
+        } else if (dialogueStep === 9) {
+            dialogueStep = 10;
+            bouncerTypewrite("Jailed... for stealing my heart! 👮‍♂️😝❤️ | โดนจำคุก... ข้อหาขโมยหัวใจของเค้าไป! 👮‍♂️😝❤️", () => {
+                triggerJailOfLove();
+            });
+        }
+    }
+
+    function playVerifyChime() {
+        try {
+            initGlobalAudioContext();
+            if (!globalAudioCtx) return;
+            const now = globalAudioCtx.currentTime;
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C Major Pentatonic chord
+            notes.forEach((freq, idx) => {
+                const time = now + idx * 0.08;
+                const osc = globalAudioCtx.createOscillator();
+                const gain = globalAudioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, time);
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(0.08, time + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.4);
+                osc.connect(gain);
+                gain.connect(globalAudioCtx.destination);
+                osc.start(time);
+                osc.stop(time + 0.4);
+            });
+        } catch (e) {}
+    }
+
+    showIdBtn.addEventListener('click', () => {
+        if (club18State !== 0) return;
         cuteSynth.playPop();
 
-        // Hide tag
-        club18AdultTag.style.display = 'none';
-
-        // Hide adult message popup
-        const adultMsg = document.getElementById('club18-adult-msg');
-        if (adultMsg) adultMsg.classList.remove('club18-msg-visible');
-
-        // Slide teen further left
-        club18Teen.style.transform = 'translateX(-180px)';
-        // Slide adult left
-        club18Adult.style.transform = 'translateX(-30px)';
-
-        // Show jail girl
-        setTimeout(() => {
-            club18Jail.classList.remove('club18-hidden');
-            club18Jail.style.transform = 'translateX(140px)';
-
-            // Show popup message
-            setTimeout(() => {
-                club18JailMsg.classList.add('club18-msg-visible');
-                cuteSynth.playPop();
-
-                // Show scroll indicator to money section
-                setTimeout(() => {
-                    scrollIndMoney.classList.remove('scroll-ind-hidden');
-                    scrollIndMoney.classList.add('scroll-ind-visible');
-                }, 1000);
-            }, 500);
-        }, 300);
+        showIdBtn.classList.add('js-hidden');
+        zombieIdCard.style.transform = 'rotate(-5deg) scale(0.95)';
+        
+        club18State = 1;
+        dialogueStep = 1;
+        advanceDialogue();
     });
+
+    forgeIdBtn.addEventListener('click', () => {
+        if (club18State !== 1) return;
+        cuteSynth.playMoney();
+
+        zombieIdCard.classList.add('forged-id');
+        idAgeVal.classList.add('forged-active');
+        fakeStamp.classList.remove('js-hidden');
+        idPhoto.src = 'assets/club18_adult.png';
+        zombieIdCard.style.transform = 'rotate(2deg) scale(1.02)';
+
+        forgeIdBtn.classList.add('js-hidden');
+        
+        club18State = 2;
+        dialogueStep = 4;
+        advanceDialogue();
+    });
+
+    submitFakeIdBtn.addEventListener('click', () => {
+        if (club18State !== 2) return;
+        cuteSynth.playPop();
+
+        submitFakeIdBtn.classList.add('js-hidden');
+        zombieIdCard.style.transform = 'scale(0.8) translateY(-20px)';
+        zombieIdCard.style.opacity = '0.5';
+
+        club18State = 3;
+        bouncerTypewrite("Place your finger on the scanner and hold it! ☝️ | วางนิ้วของเธอลงบนเครื่องสแกนแล้วกดค้างไว้เลย! ☝️", () => {
+            setTimeout(() => {
+                scannerPanel.classList.remove('js-hidden');
+            }, 300);
+        });
+    });
+
+    const startScan = (e) => {
+        if (club18State !== 3 || isScanning) return;
+        e.preventDefault();
+        isScanning = true;
+        
+        scannerLaser.style.display = 'block';
+        scannerStatus.textContent = "SCANNING...";
+        scannerStatus.classList.add('scanning');
+        fingerprintBtn.classList.add('btn-active');
+
+        scanInterval = setInterval(() => {
+            scanProgress += 2.5;
+            if (scanProgress >= 100) {
+                scanProgress = 100;
+                scannerProgressFill.style.width = '100%';
+                stopScan(true);
+            } else {
+                scannerProgressFill.style.width = scanProgress + '%';
+                if (Math.floor(scanProgress) % 10 === 0) {
+                    playScanSound(scanProgress);
+                }
+            }
+        }, 100);
+    };
+
+    const stopScan = (completed = false) => {
+        if (!isScanning) return;
+        isScanning = false;
+        clearInterval(scanInterval);
+        fingerprintBtn.classList.remove('btn-active');
+
+        if (completed) {
+            scannerLaser.style.display = 'none';
+            scannerStatus.classList.remove('scanning');
+            scannerStatus.classList.add('verified');
+            scannerStatus.textContent = "VERIFIED: 18 YEARS OLD! ✅";
+            
+            playVerifyChime();
+            
+            setTimeout(() => {
+                dialogueStep = 7;
+                advanceDialogue();
+            }, 2500);
+        } else {
+            scannerLaser.style.display = 'none';
+            scannerStatus.classList.remove('scanning');
+            scannerStatus.textContent = "HOLD TO VERIFY";
+            scanProgress = 0;
+            scannerProgressFill.style.width = '0%';
+        }
+    };
+
+    fingerprintBtn.addEventListener('mousedown', startScan);
+    fingerprintBtn.addEventListener('touchstart', startScan, {passive: false});
+    window.addEventListener('mouseup', () => stopScan(false));
+    window.addEventListener('touchend', () => stopScan(false));
+
+    function triggerJailOfLove() {
+        club18State = 4;
+        
+        playClangSound();
+        cuteSynth.playPop();
+        
+        jailBarsOverlay.className = 'jail-bars-slammed';
+        
+        // Spawn party confetti
+        spawnVIPConfetti();
+
+        setTimeout(() => {
+            scrollIndMoney.classList.remove('scroll-ind-hidden');
+            scrollIndMoney.classList.add('scroll-ind-visible');
+        }, 4500);
+    }
+
+    function spawnVIPConfetti() {
+        const rect = jailBarsOverlay.getBoundingClientRect();
+        const bodyRect = document.body.getBoundingClientRect();
+        const cx = rect.left - bodyRect.left + rect.width / 2;
+        const cy = rect.top - bodyRect.top + rect.height / 2;
+        const colors = ['#ffd1dc', '#ff477e', '#ffb3c1', '#ffd166', '#06d6a0', '#a18cd1', '#fbc2eb'];
+        
+        for (let i = 0; i < 40; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('sparkle-particle');
+            const size = Math.random() * 8 + 4;
+            dot.style.width = dot.style.height = size + 'px';
+            dot.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Coordinates relative to body
+            dot.style.left = cx + 'px';
+            dot.style.top = cy + 'px';
+            
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.random() * 160 + 40;
+            dot.style.setProperty('--tx', `${Math.cos(angle) * dist}px`);
+            dot.style.setProperty('--ty', `${Math.sin(angle) * dist - 80}px`);
+            
+            document.body.appendChild(dot);
+            setTimeout(() => dot.remove(), 1500);
+        }
+    }
 
     /* -----------------------------------------------------------
        CHOCOLATE / MONEY SENDING INTERACTION
@@ -1415,7 +1987,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const moneyMessage = document.getElementById('money-message');
     const scrollIndDish = document.getElementById('scroll-indicator-dish');
     const scrollInd2 = document.getElementById('scroll-indicator-2');
+    const scrollIndTease = document.getElementById('scroll-indicator-tease');
     const scrollIndHate = document.getElementById('scroll-indicator-hate');
+    const teaseSection = document.getElementById('tease-section');
     const hateSection = document.getElementById('hate-section');
     const hateBoyChar = document.getElementById('hate-boy-char');
     const hateGirlChar = document.getElementById('hate-girl-char');
@@ -1565,31 +2139,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const type = card.getAttribute('data-dish');
 
             if (type === 'secret') {
-                dishPopupText.innerHTML = "You never told me 😭";
+                dishPopupText.innerHTML = "You never told me 😭<br><span class='thai-bubble-text'>เธอไม่เคยบอกเค้าเลยนะ 😭</span>";
                 dishPopupBtn.textContent = "Try again";
             } else {
                 normalDishClicks++;
                 if (normalDishClicks === 1) {
-                    dishPopupText.innerHTML = "Its your favorite one so you won't get it today then 😝";
+                    dishPopupText.innerHTML = "Its your favorite one so you won't get it today then 😝<br><span class='thai-bubble-text'>นี่ของโปรดเธอใช่ไหมล่ะ งั้นวันนี้อดกินไปละกันนะ 😝</span>";
                     dishPopupBtn.textContent = "Try again";
                 } else if (normalDishClicks === 2) {
-                    dishPopupText.innerHTML = "Congrats, you wont get this one as well 😜";
+                    dishPopupText.innerHTML = "Congrats, you wont get this one as well 😜<br><span class='thai-bubble-text'>ยินดีด้วยจ้าา จานนี้ก็อดกินเหมือนกันนะ 😜</span>";
                     dishPopupBtn.textContent = "Pick again";
                 } else {
-                    dishPopupText.innerHTML = "FIRST BUY ME CHOCOLATE 😝😋";
+                    dishPopupText.innerHTML = "FIRST BUY ME CHOCOLATE 😝😋<br><span class='thai-bubble-text'>ไปซื้อช็อคโกแลตมาให้เค้าก่อนเลยยย 😝😋</span>";
                     dishPopupBtn.textContent = "Fine...";
 
-                    // Reveal the hate section scroll indicator and display the hate section!
+                    // Reveal the tease section scroll indicator and display the tease section!
                     setTimeout(() => {
-                        scrollIndHate.classList.remove('scroll-ind-hidden');
-                        scrollIndHate.classList.add('scroll-ind-visible');
+                        if (scrollIndTease) {
+                            scrollIndTease.classList.remove('scroll-ind-hidden');
+                            scrollIndTease.classList.add('scroll-ind-visible');
+                        }
                         
-                        // Reveal hate section with display flex and then transition
-                        hateSection.style.display = 'flex';
-                        setTimeout(() => {
-                            hateSection.classList.remove('hate-section-hidden');
-                            hateSection.classList.add('hate-section-visible');
-                        }, 50);
+                        if (teaseSection) {
+                            teaseSection.style.display = 'flex';
+                            setTimeout(() => {
+                                teaseSection.classList.remove('tease-section-hidden');
+                                teaseSection.classList.add('tease-section-visible');
+                            }, 50);
+                        }
                     }, 1000);
                 }
             }
@@ -1603,185 +2180,563 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* -----------------------------------------------------------
-       I HATE YOU 3000 SECTION INTERACTION (REVAMPED)
+       TEASE SECTION GAME LOGIC
        ----------------------------------------------------------- */
-    let hateState = 0; // 0 to 6 for dialogue, 7 for swipe complete
+    // Boy elements
+    const grumpyProgressFill = document.getElementById('grumpy-progress-fill');
+    const boyAgeText = document.getElementById('boy-age-text');
+    const bSpeech = document.getElementById('tease-boy-speech');
+    const overlayGlasses = document.querySelector('.overlay-glasses');
+    const overlayCane = document.querySelector('.overlay-cane');
+    const overlayBeard = document.querySelector('.overlay-beard');
 
-    const hateBoyTag = document.getElementById('hate-boy-tag');
-    // hateGirlTag is already selected
-    const swiperMachine = document.getElementById('swiper-machine');
-    const swipeCard = document.getElementById('swipe-card');
-    const flyingPlane = document.getElementById('flying-plane');
-    const droppedParcel = document.getElementById('dropped-parcel');
-    const revealedTicket = document.getElementById('revealed-ticket');
-    const parcelTag = document.getElementById('parcel-tag');
+    // Girl elements
+    const meanProgressFill = document.getElementById('mean-progress-fill');
+    const girlMeanText = document.getElementById('girl-mean-text');
+    const gSpeech = document.getElementById('tease-girl-speech');
+    const overlayHorns = document.querySelector('.overlay-horns');
+    const overlayPitchfork = document.querySelector('.overlay-pitchfork');
+    const overlayCrown = document.querySelector('.overlay-crown');
 
-    function updateHateDialogue(msgText, isBoy, nextState) {
-        cuteSynth.playPop();
-        
-        if (isBoy) {
-            hateBoyMsg.textContent = msgText;
-            hateBoyMsg.classList.add('hate-msg-visible');
-            hateGirlMsg.classList.remove('hate-msg-visible');
-            hateBoyTag.classList.add('js-hidden');
-            if (nextState < 6) hateGirlTag.classList.remove('js-hidden');
-        } else {
-            hateGirlMsg.textContent = msgText;
-            hateGirlMsg.classList.add('hate-msg-visible');
-            hateBoyMsg.classList.remove('hate-msg-visible');
-            hateGirlTag.classList.add('js-hidden');
-            if (nextState < 6) hateBoyTag.classList.remove('js-hidden');
+    // Action deck buttons
+    const teaseBtnShe1 = document.getElementById('tease-btn-she-1');
+    const teaseBtnShe2 = document.getElementById('tease-btn-she-2');
+    const teaseBtnShe3 = document.getElementById('tease-btn-she-3');
+    const teaseBtnHe1 = document.getElementById('tease-btn-he-1');
+    const teaseBtnHe2 = document.getElementById('tease-btn-he-2');
+    const teaseBtnHe3 = document.getElementById('tease-btn-he-3');
+    const truceBtn = document.getElementById('truce-btn');
+    const truceMessageCard = document.getElementById('truce-message-card');
+
+    let teaseStep = 0; // 0 to 6 representing conversation state
+    let isTeaseTyping = false;
+    let teaseTypewriterTimeout = null;
+
+    function playGiggleSound() {
+        try {
+            initGlobalAudioContext();
+            if (!globalAudioCtx) return;
+            const ctx = globalAudioCtx;
+            const now = ctx.currentTime;
+            // Short high-pitched giggling notes
+            const notes = [659.25, 783.99, 659.25, 783.99, 987.77];
+            notes.forEach((freq, idx) => {
+                const time = now + idx * 0.08;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, time);
+                gain.gain.setValueAtTime(0.04, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(time);
+                osc.stop(time + 0.1);
+            });
+        } catch (e) {}
+    }
+
+    function playGrumpySound() {
+        try {
+            initGlobalAudioContext();
+            if (!globalAudioCtx) return;
+            const ctx = globalAudioCtx;
+            const now = ctx.currentTime;
+            // Funny flat/grumpy complaining slides
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.linearRampToValueAtTime(90, now + 0.4);
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.4);
+        } catch (e) {}
+    }
+
+    const isTeaseTest = new URLSearchParams(window.location.search).get('test') === 'true';
+    const teaseDelay = isTeaseTest ? 10 : 1000;
+
+    function teaseTypewrite(bubbleEl, text, onDone) {
+        if (teaseTypewriterTimeout) {
+            clearTimeout(teaseTypewriterTimeout);
         }
         
-        hateState = nextState;
+        const parts = text.split('|');
+        const engText = parts[0].trim();
+        const thaiText = parts[1] ? parts[1].trim() : "";
+
+        bubbleEl.classList.remove('js-hidden');
+
+        if (isTeaseTest) {
+            bubbleEl.innerHTML = engText;
+            if (thaiText) {
+                bubbleEl.innerHTML += `<br><span class="thai-bubble-text">${thaiText}</span>`;
+            }
+            bubbleEl.classList.add('tease-bubble-visible');
+            isTeaseTyping = false;
+            if (onDone) onDone();
+            return;
+        }
+
+        isTeaseTyping = true;
+        bubbleEl.innerHTML = "";
+        bubbleEl.classList.add('tease-bubble-visible');
         
-        if (hateState === 6) {
-            // Trigger swipe mini-game
+        let i = 0;
+        const tick = () => {
+            if (i < engText.length) {
+                bubbleEl.innerHTML += engText[i] === '\n' ? '<br>' : engText[i];
+                if (engText[i] !== ' ' && engText[i] !== '\n') {
+                    cuteSynth.playTick();
+                }
+                i++;
+                teaseTypewriterTimeout = setTimeout(tick, 30);
+            } else {
+                isTeaseTyping = false;
+                if (thaiText) {
+                    bubbleEl.innerHTML += `<br><span class="thai-bubble-text">${thaiText}</span>`;
+                }
+                if (onDone) onDone();
+            }
+        };
+        tick();
+    }
+
+    // Step 1: She Teases #1 "Hey Old Man! 👴👓"
+    teaseBtnShe1.addEventListener('click', () => {
+        if (teaseStep !== 0 || isTeaseTyping) return;
+        teaseBtnShe1.disabled = true;
+        playGiggleSound();
+        
+        // Hide boy bubble
+        bSpeech.classList.remove('tease-bubble-visible');
+        bSpeech.classList.add('js-hidden');
+
+        // Giggles, overlays glasses, updates Age and meter
+        teaseTypewrite(gSpeech, "Hey old man! Did you forget your reading glasses again? 👵👓 | นี่ตาแก่! ลืมแว่นอ่านหนังสืออีกแล้วเหรอจ๊ะ? 👵👓", () => {
+            overlayGlasses.classList.remove('js-hidden');
+            grumpyProgressFill.style.width = '33%';
+            boyAgeText.innerHTML = "40 (Spectacled) <span class='thai-status'>40 (เริ่มใส่แว่น)</span>";
+            
             setTimeout(() => {
-                hateGirlMsg.classList.remove('hate-msg-visible');
-                swiperMachine.classList.remove('js-hidden');
-                swipeCard.classList.remove('js-hidden');
-                cuteSynth.playMoney(); // play sound to indicate mini-game start
-            }, 2000);
+                teaseBtnShe1.classList.add('js-hidden');
+                teaseBtnHe1.classList.remove('js-hidden');
+                teaseStep = 1;
+            }, teaseDelay);
+        });
+    });
+
+    // Step 2: He Reacts #1 "You're so mean! 😭"
+    teaseBtnHe1.addEventListener('click', () => {
+        if (teaseStep !== 1 || isTeaseTyping) return;
+        teaseBtnHe1.disabled = true;
+        playGrumpySound();
+        
+        // Hide girl bubble
+        gSpeech.classList.remove('tease-bubble-visible');
+        gSpeech.classList.add('js-hidden');
+
+        teaseTypewrite(bSpeech, "You're so mean to me! Why do you always say that? 😭 | เธอใจร้ายกับเค้าจัง! ทำไมชอบว่าเค้าแบบนี้ตลอดเลยอ่ะ? 😭", () => {
+            overlayHorns.classList.remove('js-hidden');
+            meanProgressFill.style.width = '33%';
+            girlMeanText.innerHTML = "Mischievous 😈 <span class='thai-status'>ซุกซน 😈</span>";
+            
+            setTimeout(() => {
+                teaseBtnHe1.classList.add('js-hidden');
+                teaseBtnShe2.classList.remove('js-hidden');
+                teaseStep = 2;
+            }, teaseDelay);
+        });
+    });
+
+    // Step 3: She Teases #2 "Grandpa nap time! ⏰🛏️"
+    teaseBtnShe2.addEventListener('click', () => {
+        if (teaseStep !== 2 || isTeaseTyping) return;
+        teaseBtnShe2.disabled = true;
+        playGiggleSound();
+        
+        bSpeech.classList.remove('tease-bubble-visible');
+        bSpeech.classList.add('js-hidden');
+
+        teaseTypewrite(gSpeech, "Grandpa, it's 2 PM! Time for your afternoon nap and warm milk! ⏰🛏️🥛 | คุณปู่ขา บ่ายสองแล้วนะ! ได้เวลานอนกลางวันกับกินนมอุ่นๆ แล้วค่ะ! ⏰🛏️🥛", () => {
+            overlayCane.classList.remove('js-hidden');
+            grumpyProgressFill.style.width = '66%';
+            boyAgeText.innerHTML = "65 (Needs Cane) <span class='thai-status'>65 (ต้องใช้ไม้เท้า)</span>";
+            
+            setTimeout(() => {
+                teaseBtnShe2.classList.add('js-hidden');
+                teaseBtnHe2.classList.remove('js-hidden');
+                teaseStep = 3;
+            }, teaseDelay);
+        });
+    });
+
+    // Step 4: He Reacts #2 "No chocolates for you! 🍫❌"
+    teaseBtnHe2.addEventListener('click', () => {
+        if (teaseStep !== 3 || isTeaseTyping) return;
+        teaseBtnHe2.disabled = true;
+        playGrumpySound();
+        
+        gSpeech.classList.remove('tease-bubble-visible');
+        gSpeech.classList.add('js-hidden');
+
+        teaseTypewrite(bSpeech, "Fine! You're so mean! No chocolates or Thai food for you today! 🍫❌ | ก็ได้! ยัยคนใจร้าย! วันนี้อดกินช็อคโกแลตกับอาหารไทยไปเลยนะ! 🍫❌", () => {
+            overlayPitchfork.classList.remove('js-hidden');
+            meanProgressFill.style.width = '66%';
+            girlMeanText.innerHTML = "Evil Zombie 🧟‍♀️ <span class='thai-status'>ซอมบี้ตัวร้าย 🧟‍♀️</span>";
+            
+            setTimeout(() => {
+                teaseBtnHe2.classList.add('js-hidden');
+                teaseBtnShe3.classList.remove('js-hidden');
+                teaseStep = 4;
+            }, teaseDelay);
+        });
+    });
+
+    // Step 5: She Teases #3 "Is that a gray hair? 👵"
+    teaseBtnShe3.addEventListener('click', () => {
+        if (teaseStep !== 4 || isTeaseTyping) return;
+        teaseBtnShe3.disabled = true;
+        playGiggleSound();
+        
+        bSpeech.classList.remove('tease-bubble-visible');
+        bSpeech.classList.add('js-hidden');
+
+        teaseTypewrite(gSpeech, "Wait, is that a gray hair? Let me pluck it for you, grandpappy! 👵✨ | เอ๊ะ นั่นผมหงอกหรือเปล่าน่ะ? มามะ คุณปู่ เดี๋ยวหนูถอนให้นะ! 👵✨", () => {
+            overlayBeard.classList.remove('js-hidden');
+            grumpyProgressFill.style.width = '100%';
+            boyAgeText.innerHTML = "80 (Full Grandpa!) <span class='thai-status'>80 (คุณปู่เต็มตัว!)</span>";
+            
+            setTimeout(() => {
+                teaseBtnShe3.classList.add('js-hidden');
+                teaseBtnHe3.classList.remove('js-hidden');
+                teaseStep = 5;
+            }, teaseDelay);
+        });
+    });
+
+    // Step 6: He Reacts #3 "Meanest girl ever! 💔"
+    teaseBtnHe3.addEventListener('click', () => {
+        if (teaseStep !== 5 || isTeaseTyping) return;
+        teaseBtnHe3.disabled = true;
+        playGrumpySound();
+        
+        gSpeech.classList.remove('tease-bubble-visible');
+        gSpeech.classList.add('js-hidden');
+
+        teaseTypewrite(bSpeech, "You are officially the meanest girl in the entire universe! 💔🌍 | เธอคือยัยคนใจร้ายที่สุดในจักรวาลอย่างเป็นทางการเลย! 💔🌍", () => {
+            overlayCrown.classList.remove('js-hidden');
+            meanProgressFill.style.width = '100%';
+            girlMeanText.innerHTML = "Unstoppable Devil 👑😈 <span class='thai-status'>ปีศาจที่ไม่มีใครหยุดได้ 👑😈</span>";
+            
+            setTimeout(() => {
+                teaseBtnHe3.classList.add('js-hidden');
+                truceBtn.classList.remove('js-hidden');
+                teaseStep = 6;
+            }, teaseDelay);
+        });
+    });
+
+    // Step 7: Declare Truce click
+    truceBtn.addEventListener('click', () => {
+        if (teaseStep !== 6) return;
+        truceBtn.disabled = true;
+        
+        playVerifyChime();
+        
+        gSpeech.classList.remove('tease-bubble-visible');
+        gSpeech.classList.add('js-hidden');
+        bSpeech.classList.remove('tease-bubble-visible');
+        bSpeech.classList.add('js-hidden');
+
+        const container = teaseSection.querySelector('.tease-game-container');
+        if (container) {
+            container.classList.add('truce-active');
+        }
+
+        document.querySelectorAll('.tease-overlay').forEach(overlay => {
+            overlay.style.opacity = '0';
+        });
+
+        spawnTruceHearts();
+
+        setTimeout(() => {
+            truceMessageCard.classList.remove('truce-card-hidden');
+            truceMessageCard.classList.add('truce-card-visible');
+            truceMessageCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            setTimeout(() => {
+                if (hateSection) {
+                    hateSection.style.display = 'flex';
+                    setTimeout(() => {
+                        hateSection.classList.remove('hate-section-hidden');
+                        hateSection.classList.add('hate-section-visible');
+                    }, 50);
+                }
+                const scrollHate = document.getElementById('scroll-indicator-hate');
+                if (scrollHate) {
+                    scrollHate.classList.remove('scroll-ind-hidden');
+                    scrollHate.classList.add('scroll-ind-visible');
+                }
+            }, isTeaseTest ? 10 : 1500);
+        }, isTeaseTest ? 10 : 1200);
+    });
+
+    function spawnTruceHearts() {
+        const colors = ['#ff477e', '#ff85a7', '#ffb3c1', '#fbc2eb', '#e91e63'];
+        const container = teaseSection.querySelector('.tease-game-container');
+        const rect = container.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        
+        for (let i = 0; i < 30; i++) {
+            const heart = document.createElement('div');
+            heart.textContent = '❤️';
+            heart.style.position = 'fixed';
+            heart.style.fontSize = `${Math.random() * 1.0 + 1.0}rem`;
+            heart.style.pointerEvents = 'none';
+            heart.style.zIndex = '999';
+            heart.style.left = cx + 'px';
+            heart.style.top = cy + 'px';
+            
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.random() * 180 + 40;
+            const tx = Math.cos(angle) * dist;
+            const ty = Math.sin(angle) * dist;
+            
+            heart.style.setProperty('--tx', `${tx}px`);
+            heart.style.setProperty('--ty', `${ty}px`);
+            
+            heart.style.animation = `emojiPortalFly 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards`;
+            
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1500);
         }
     }
 
-    hateBoyChar.addEventListener('click', () => {
-        if (hateState === 0) {
-            updateHateDialogue("yuo're so delustional, no one will like to talk to you 📐 😜 ur so bad 👧 😭", true, 1);
-        } else if (hateState === 2) {
-            updateHateDialogue("noooo, no one is saying me to stay. I choose to stay because I like this", true, 3);
-        } else if (hateState === 4) {
-            updateHateDialogue("I even have a list to do", true, 5);
-        }
-    });
+    /* -----------------------------------------------------------
+       I HATE YOU 3000 SECTION INTERACTION (REVAMPED)
+       ----------------------------------------------------------- */
+    let hateState = 0; // 0 to 9 for dialogue lines, 10 for finale
+    const dialogueScript = [
+        { text: "can I ask you something | เค้าขอถามอะไรหน่อยได้ไหม", speaker: "girl" },
+        { text: "no.! 😡 | ไม่.! 😡", speaker: "boy" },
+        { text: "doesn't matter I'll still ask | ไม่รู้ล่ะ ยังไงเค้าก็จะถามอยู่ดี", speaker: "girl" },
+        { text: "I knew it... 😂 | คิดไว้แล้วเชียว... 😂", speaker: "boy" },
+        { text: "so tell me when is your Birthday? | บอกหน่อยสิว่าวันเกิดเธอวันไหน?", speaker: "girl" },
+        { text: "Its on 1 July, 2004 | วันที่ 1 กรกฎาคม 2004 ครับ", speaker: "boy" },
+        { text: "will you wish me and give me surprise? | แล้วเธอจะอวยพรวันเกิดและมีเซอร์ไพรส์ให้เค้าไหม?", speaker: "boy" },
+        { text: "noooo.! 😝 | ไม่อ่ะะะ.! 😝", speaker: "girl" },
+        { text: "I Hate Youuuuuuu | เค้าเกลียดเธอออออออ", speaker: "boy" },
+        { text: "I hate Youuu 3000 | เค้าเกลียดเธอ 3000 เลย", speaker: "girl" }
+    ];
 
-    hateGirlChar.addEventListener('click', () => {
-        if (hateState === 1) {
-            updateHateDialogue("what are you waiting for? I'm not forcing you to stay, if it doesn't work, then just go. I'll respect your decision", false, 2);
-        } else if (hateState === 3) {
-            updateHateDialogue("how sure are you? that you want to stay", false, 4);
-        } else if (hateState === 5) {
-            updateHateDialogue("what list?", false, 6);
-        }
-    });
+    const deckContainer = document.getElementById('dialogue-deck-container');
+    const deckHint = document.getElementById('deck-hint');
+    const activeCard = document.getElementById('active-dialogue-card');
+    const cardText = activeCard.querySelector('.card-text');
+    const finaleHeart = document.getElementById('finale-heart');
 
-    // --- Drag and Drop for Swipe Card ---
-    let isDraggingCard = false;
-    let cardStartX, cardStartY;
-    
-    function startCardDrag(e) {
-        if (hateState !== 6) return;
-        isDraggingCard = true;
-        swipeCard.style.transition = 'none';
+    function loadNextCard() {
+        if (hateState >= dialogueScript.length) {
+            triggerFinale();
+            return;
+        }
         
-        // Hide the swipe hint on first interaction
-        const hint = swipeCard.querySelector('.swipe-hint');
-        if (hint) hint.style.display = 'none';
+        const line = dialogueScript[hateState];
+        const parts = line.text.split('|');
+        const engText = parts[0].trim();
+        const thaiText = parts[1] ? parts[1].trim() : "";
+        cardText.innerHTML = `${engText}${thaiText ? `<br><span class="thai-card-text">${thaiText}</span>` : ""}`;
+        
+        activeCard.className = 'dialogue-card'; // reset classes
+        if (line.speaker === 'girl') {
+            activeCard.classList.add('card-theme-girl');
+        } else {
+            activeCard.classList.add('card-theme-boy');
+        }
+        
+        activeCard.classList.remove('js-hidden');
+        deckHint.classList.remove('js-hidden');
+        
+        // Reset position
+        activeCard.style.removeProperty('left');
+        activeCard.style.removeProperty('top');
+        activeCard.style.transform = 'none';
+        cardOffsetX = 0;
+        cardOffsetY = 0;
+    }
+    let isDraggingDialog = false;
+    let dragStartX = 0, dragStartY = 0;
+    let cardOffsetX = 0, cardOffsetY = 0;
+
+    loadNextCard();
+
+    function startDialogDrag(e) {
+        if (hateState >= dialogueScript.length) return;
+        
+        isDraggingDialog = true;
+        deckHint.style.display = 'none';
+        
+        activeCard.style.transition = 'none';
+        activeCard.classList.add('card-dragging');
         
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        const rect = swipeCard.getBoundingClientRect();
         
-        cardStartX = clientX - rect.left;
-        cardStartY = clientY - rect.top;
+        dragStartX = clientX - cardOffsetX;
+        dragStartY = clientY - cardOffsetY;
     }
 
-    function moveCardDrag(e) {
-        if (!isDraggingCard) return;
+    function moveDialogDrag(e) {
+        if (!isDraggingDialog) return;
         e.preventDefault(); // prevent scrolling
         
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         
-        const stageRect = document.querySelector('.hate-stage-content').getBoundingClientRect();
+        cardOffsetX = clientX - dragStartX;
+        cardOffsetY = clientY - dragStartY;
         
-        let newX = clientX - stageRect.left - cardStartX;
-        let newY = clientY - stageRect.top - cardStartY;
-        
-        swipeCard.style.left = `${newX}px`;
-        swipeCard.style.top = `${newY}px`;
-        swipeCard.style.right = 'auto'; // override default CSS right
+        activeCard.style.transform = `translate(${cardOffsetX}px, ${cardOffsetY}px) scale(1.05) rotate(2deg)`;
     }
 
-    function endCardDrag(e) {
-        if (!isDraggingCard) return;
-        isDraggingCard = false;
+    function endDialogDrag(e) {
+        if (!isDraggingDialog) return;
+        isDraggingDialog = false;
+        activeCard.classList.remove('card-dragging');
+        activeCard.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s';
         
-        // Check collision with swiper machine
-        const cardRect = swipeCard.getBoundingClientRect();
-        const machineRect = swiperMachine.getBoundingClientRect();
+        const cardRect = activeCard.getBoundingClientRect();
+        const boyRect = hateBoyChar.getBoundingClientRect();
+        const girlRect = hateGirlChar.getBoundingClientRect();
         
-        // Simple bounding box intersection check
-        const overlapX = Math.max(0, Math.min(cardRect.right, machineRect.right) - Math.max(cardRect.left, machineRect.left));
-        const overlapY = Math.max(0, Math.min(cardRect.bottom, machineRect.bottom) - Math.max(cardRect.top, machineRect.top));
+        const currentLine = dialogueScript[hateState];
         
-        if (overlapX > 20 && overlapY > 20) {
-            // Successful swipe!
-            triggerPlaneSequence();
+        let droppedOnBoy = checkOverlap(cardRect, boyRect);
+        let droppedOnGirl = checkOverlap(cardRect, girlRect);
+        
+        if (currentLine.speaker === 'boy' && droppedOnBoy) {
+            handleSuccessfulDrop('boy');
+        } else if (currentLine.speaker === 'girl' && droppedOnGirl) {
+            handleSuccessfulDrop('girl');
         } else {
-            // Snap back
-            swipeCard.style.transition = 'all 0.3s ease';
-            swipeCard.style.left = 'auto';
-            swipeCard.style.top = '100px';
-            swipeCard.style.right = '35%';
+            handleWrongDrop();
         }
     }
 
-    swipeCard.addEventListener('mousedown', startCardDrag);
-    swipeCard.addEventListener('touchstart', startCardDrag, {passive: false});
-    document.addEventListener('mousemove', moveCardDrag);
-    document.addEventListener('touchmove', moveCardDrag, {passive: false});
-    document.addEventListener('mouseup', endCardDrag);
-    document.addEventListener('touchend', endCardDrag);
-
-    function triggerPlaneSequence() {
-        hateState = 7;
-        cuteSynth.playPop(); // sound for successful swipe
-        
-        // Hide card and machine
-        swipeCard.classList.add('js-hidden');
-        swiperMachine.classList.add('js-hidden');
-        
-        // Start plane animation
-        flyingPlane.classList.remove('js-hidden');
-        flyingPlane.classList.add('plane-fly-anim');
-        
-        // Drop parcel halfway through plane animation
-        setTimeout(() => {
-            droppedParcel.classList.remove('js-hidden');
-            droppedParcel.classList.add('parcel-drop-anim');
-            synth.playThud(); // soft thud for parcel dropping
-        }, 1000);
-        
-        // Clean up plane after it leaves
-        setTimeout(() => {
-            flyingPlane.classList.add('js-hidden');
-        }, 2600);
+    function checkOverlap(rect1, rect2) {
+        const expand = 30; // generous hitbox
+        return !(rect1.right < rect2.left - expand || 
+                 rect1.left > rect2.right + expand || 
+                 rect1.bottom < rect2.top - expand || 
+                 rect1.top > rect2.bottom + expand);
     }
 
-    // Parcel Click Logic
-    droppedParcel.addEventListener('click', () => {
-        if (hateState !== 7) return;
-        hateState = 8;
+    function handleWrongDrop() {
+        cuteSynth.playPop(); 
+        activeCard.classList.add('card-wrong-shake');
+        
+        cardOffsetX = 0;
+        cardOffsetY = 0;
+        activeCard.style.transform = 'none';
+        
+        setTimeout(() => {
+            activeCard.classList.remove('card-wrong-shake');
+        }, 400);
+    }
+
+    function handleSuccessfulDrop(speaker) {
+        cuteSynth.playMoney(); 
+        
+        activeCard.classList.add('js-hidden');
+        
+        const line = dialogueScript[hateState];
+        const parts = line.text.split('|');
+        const engText = parts[0].trim();
+        const thaiText = parts[1] ? parts[1].trim() : "";
+        const formattedMsg = `${engText}${thaiText ? `<br><span class="thai-bubble-text">${thaiText}</span>` : ""}`;
+
+        if (speaker === 'boy') {
+            hateBoyMsg.innerHTML = formattedMsg;
+            hateBoyMsg.classList.add('hate-msg-visible');
+            hateGirlMsg.classList.remove('hate-msg-visible');
+            
+            hateBoyChar.style.transform = 'scale(1.1)';
+            setTimeout(() => hateBoyChar.style.transform = 'scale(1)', 200);
+            createConfettiBurst(hateBoyChar);
+        } else {
+            hateGirlMsg.innerHTML = formattedMsg;
+            hateGirlMsg.classList.add('hate-msg-visible');
+            hateBoyMsg.classList.remove('hate-msg-visible');
+            
+            hateGirlChar.style.transform = 'scale(1.1)';
+            setTimeout(() => hateGirlChar.style.transform = 'scale(1)', 200);
+            createConfettiBurst(hateGirlChar);
+        }
+        
+        hateState++;
+        
+        setTimeout(() => {
+            if (speaker === 'boy') hateBoyMsg.classList.remove('hate-msg-visible');
+            if (speaker === 'girl') hateGirlMsg.classList.remove('hate-msg-visible');
+            loadNextCard();
+        }, 2000);
+    }
+
+    activeCard.addEventListener('mousedown', startDialogDrag);
+    activeCard.addEventListener('touchstart', startDialogDrag, {passive: false});
+    document.addEventListener('mousemove', moveDialogDrag);
+    document.addEventListener('touchmove', moveDialogDrag, {passive: false});
+    document.addEventListener('mouseup', endDialogDrag);
+    document.addEventListener('touchend', endDialogDrag);
+
+    function createConfettiBurst(targetElement) {
+        const rect = targetElement.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'confetti-particle';
+            
+            const colors = ['#ff477e', '#ff9a9e', '#fecfef', '#a18cd1', '#fbc2eb'];
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 50 + Math.random() * 100;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+            
+            particle.style.setProperty('--tx', `${tx}px`);
+            particle.style.setProperty('--ty', `${ty}px`);
+            
+            particle.style.left = `${centerX}px`;
+            particle.style.top = `${centerY}px`;
+            particle.style.animation = `particlePop 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
+            
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 800);
+        }
+    }
+
+    function triggerFinale() {
+        deckContainer.classList.add('js-hidden');
         cuteSynth.playPop();
         
-        // Hide parcel, reveal ticket
-        droppedParcel.classList.add('js-hidden');
-        revealedTicket.classList.remove('js-hidden');
+        finaleHeart.classList.remove('js-hidden');
+        finaleHeart.classList.add('finale-heart-anim');
         
-        // Small delay for CSS transition to trigger
         setTimeout(() => {
-            revealedTicket.classList.add('ticket-visible');
-            
-            // Show scroll indicator after 1.5s
-            setTimeout(() => {
-                scrollInd2.classList.remove('scroll-ind-hidden');
-                scrollInd2.classList.add('scroll-ind-visible');
-                scrollInd2.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 1500);
-        }, 50);
-    });
+            scrollInd2.classList.remove('scroll-ind-hidden');
+            scrollInd2.classList.add('scroll-ind-visible');
+            scrollInd2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 1500);
+    }
 
 
     /* -----------------------------------------------------------
@@ -1937,9 +2892,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Spawn twinkling star shapes flying outwards
     function spawnSparkles(el) {
         const rect = el.getBoundingClientRect();
-        // Coordinates relative to viewport + scroll
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
+        const bodyRect = document.body.getBoundingClientRect();
+        // Coordinates relative to body
+        const cx = rect.left - bodyRect.left + rect.width / 2;
+        const cy = rect.top - bodyRect.top + rect.height / 2;
         const colors = ['#ffffff', '#ffd1dc', '#ff477e', '#ffecd2', '#fff4cc', '#e2f0d9', '#d0e1fd'];
         const count = 40;
 
@@ -1953,8 +2909,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Star clip path shape
             dot.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
             
-            dot.style.left = cx + window.scrollX + 'px';
-            dot.style.top = cy + window.scrollY + 'px';
+            dot.style.left = cx + 'px';
+            dot.style.top = cy + 'px';
 
             const angle = Math.random() * Math.PI * 2;
             const dist = Math.random() * 220 + 80;
@@ -2037,7 +2993,7 @@ document.addEventListener('DOMContentLoaded', () => {
         candleBlown = true;
         scareTriggered = true;
         boxOpened = false; // Closed initially so they can open it after returning!
-        club18State = 2;
+        club18State = 4;
         moneyTriggered = true;
         hateState = 4;
 
@@ -2048,29 +3004,49 @@ document.addEventListener('DOMContentLoaded', () => {
             wishContent.style.opacity = '1';
         }
 
-        // Restore Club 18 stage state (jail girl visible, others pushed left)
-        if (club18Teen) {
-            club18Teen.style.transform = 'translateX(-180px)';
-            club18Teen.classList.remove('club18-center');
-            const teenTag = club18Teen.querySelector('.click-me-tag');
-            if (teenTag) teenTag.style.display = 'none';
-            const teenMsg = document.getElementById('club18-teen-msg');
-            if (teenMsg) teenMsg.classList.remove('club18-msg-visible');
+        // Restore Polaroid Portal Reveal states
+        portal1Opened = true;
+        portal2Opened = true;
+        const p1 = document.getElementById('portal-1');
+        const p2 = document.getElementById('portal-2');
+        if (p1) p1.classList.add('portal-dissolve');
+        if (p2) p2.classList.add('portal-dissolve');
+        const img1 = p1 ? p1.previousElementSibling : null;
+        const img2 = p2 ? p2.previousElementSibling : null;
+        if (img1) img1.classList.add('displace-active-1');
+        if (img2) img2.classList.add('displace-active-2');
+        const gMsg = document.getElementById('gallery-message');
+        if (gMsg) {
+            gMsg.classList.remove('gallery-msg-hidden');
+            gMsg.classList.add('gallery-msg-visible');
+            setTimeout(() => {
+                startCryingTears();
+            }, 500);
         }
-        if (club18Adult) {
-            club18Adult.classList.remove('club18-hidden');
-            club18Adult.style.transform = 'translateX(-30px)';
-            if (club18AdultTag) club18AdultTag.style.display = 'none';
-            const adultMsg = document.getElementById('club18-adult-msg');
-            if (adultMsg) adultMsg.classList.remove('club18-msg-visible');
+
+        // Restore Club 18 stage state (VIP Love Jail active)
+        const bouncerSpeech = document.getElementById('bouncer-speech');
+        const showIdBtn = document.getElementById('show-id-btn');
+        const idAgeVal = document.getElementById('id-age-val');
+        const idPhoto = document.getElementById('id-photo');
+        const fakeStamp = document.getElementById('fake-stamp');
+        const jailBarsOverlay = document.getElementById('jail-bars-overlay');
+        const biometricScannerPanel = document.getElementById('biometric-scanner-panel');
+        
+        if (bouncerSpeech) bouncerSpeech.innerHTML = "Jailed... for stealing my heart! 👮‍♂️😝❤️<br><span class='thai-bubble-text'>โดนจำคุก... ข้อหาขโมยหัวใจของเค้าไป! 👮‍♂️😝❤️</span>";
+        if (idAgeVal) {
+            idAgeVal.textContent = "17";
+            idAgeVal.classList.add('forged-active');
         }
-        if (club18Jail) {
-            club18Jail.classList.remove('club18-hidden');
-            club18Jail.style.transform = 'translateX(140px)';
+        if (fakeStamp) fakeStamp.classList.remove('js-hidden');
+        if (idPhoto) idPhoto.src = 'assets/club18_adult.png';
+        if (jailBarsOverlay) {
+            jailBarsOverlay.className = 'jail-bars-slammed';
         }
-        if (club18JailMsg) {
-            club18JailMsg.classList.add('club18-msg-visible');
+        if (biometricScannerPanel) {
+            biometricScannerPanel.classList.add('js-hidden');
         }
+        if (showIdBtn) showIdBtn.style.display = 'none';
         if (scrollIndMoney) {
             scrollIndMoney.classList.remove('scroll-ind-hidden');
             scrollIndMoney.classList.add('scroll-ind-visible');
@@ -2095,6 +3071,59 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollIndDish.classList.add('scroll-ind-visible');
         }
 
+        // Restore Tease stage state
+        teaseStep = 6;
+        if (teaseSection) {
+            teaseSection.style.display = 'flex';
+            teaseSection.classList.remove('tease-section-hidden');
+            teaseSection.classList.add('tease-section-visible');
+            const teaseContainer = teaseSection.querySelector('.tease-game-container');
+            if (teaseContainer) {
+                teaseContainer.classList.add('truce-active');
+            }
+        }
+        if (grumpyProgressFill) grumpyProgressFill.style.width = '100%';
+        if (meanProgressFill) meanProgressFill.style.width = '100%';
+        if (boyAgeText) boyAgeText.innerHTML = "80 (Full Grandpa!) <span class='thai-status'>80 (คุณปู่เต็มตัว!)</span>";
+        if (girlMeanText) girlMeanText.innerHTML = "Unstoppable Devil 👑😈 <span class='thai-status'>ปีศาจที่ไม่มีใครหยุดได้ 👑😈</span>";
+        if (truceMessageCard) {
+            truceMessageCard.classList.remove('truce-card-hidden');
+            truceMessageCard.classList.add('truce-card-visible');
+        }
+        
+        // Hide all buttons in action deck
+        if (teaseBtnShe1) teaseBtnShe1.classList.add('js-hidden');
+        if (teaseBtnShe2) teaseBtnShe2.classList.add('js-hidden');
+        if (teaseBtnShe3) teaseBtnShe3.classList.add('js-hidden');
+        if (teaseBtnHe1) teaseBtnHe1.classList.add('js-hidden');
+        if (teaseBtnHe2) teaseBtnHe2.classList.add('js-hidden');
+        if (teaseBtnHe3) teaseBtnHe3.classList.add('js-hidden');
+        if (truceBtn) truceBtn.classList.add('js-hidden');
+        
+        // Hide overlays like in normal truce
+        document.querySelectorAll('.tease-overlay').forEach(overlay => {
+            overlay.style.opacity = '0';
+        });
+        
+        // Hide speech bubbles
+        if (gSpeech) {
+            gSpeech.classList.remove('tease-bubble-visible');
+            gSpeech.classList.add('js-hidden');
+        }
+        if (bSpeech) {
+            bSpeech.classList.remove('tease-bubble-visible');
+            bSpeech.classList.add('js-hidden');
+        }
+
+        if (scrollIndTease) {
+            scrollIndTease.classList.remove('scroll-ind-hidden');
+            scrollIndTease.classList.add('scroll-ind-visible');
+        }
+        if (scrollIndHate) {
+            scrollIndHate.classList.remove('scroll-ind-hidden');
+            scrollIndHate.classList.add('scroll-ind-visible');
+        }
+
         // Restore Hate stage state
         if (hateSection) {
             hateSection.style.display = 'flex';
@@ -2117,11 +3146,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // Restore active dialogue speech bubbles
         if (hateGirlMsg) {
-            hateGirlMsg.textContent = "are you dead?";
+            hateGirlMsg.innerHTML = "are you dead?<br><span class='thai-bubble-text'>ตายหรือยังเนี่ย?</span>";
             hateGirlMsg.classList.add('hate-msg-visible');
         }
         if (hateBoyMsg) {
-            hateBoyMsg.textContent = "I Hate You 3000 💔";
+            hateBoyMsg.innerHTML = "I Hate You 3000 💔<br><span class='thai-bubble-text'>เค้าเกลียดเธอ 3000 เลย 💔</span>";
             hateBoyMsg.classList.add('hate-msg-visible');
         }
         // Restore dizzy stars above boy
